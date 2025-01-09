@@ -13,10 +13,16 @@ export default function Login({ navigation }) {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
-          const { name, password } = JSON.parse(userData);
+          const { name, password, agentId } = JSON.parse(userData);
           setName(name);
           setPassword(password);
           setStayLoggedIn(true);
+        } else {
+          const agentIdData = await AsyncStorage.getItem('agentId');
+          if (agentIdData) {
+            const { agentId } = JSON.parse(agentIdData);
+            console.log("Loaded agentId:", agentId);
+          }
         }
       } catch (error) {
         console.error("Failed to load user data", error);
@@ -30,8 +36,14 @@ export default function Login({ navigation }) {
     try {
       const response = await axios.post('http://192.168.1.97:3000/ag/login', { name, password });
       if (response.status === 200) {
+        const agentIdResponse = await axios.get(`http://192.168.1.97:3000/ag/agentId/${name}`);
+        const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
+
+        // Toujours enregistrer l'ID de l'agent
+        await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
+
         if (stayLoggedIn) {
-          await AsyncStorage.setItem('user', JSON.stringify({ name, password }));
+          await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
         } else {
           await AsyncStorage.removeItem('user');
         }

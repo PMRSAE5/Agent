@@ -27,6 +27,7 @@ export default function QR({ navigation }) {
         <View>
           <Text>Name: {userInfo.name}</Text>
           <Text>Password: {userInfo.password}</Text>
+          <Text>Agent ID: {userInfo.agentId}</Text> {/* Afficher l'ID de l'agent */}
         </View>
       ) : (
         <Text>No user data found</Text>
