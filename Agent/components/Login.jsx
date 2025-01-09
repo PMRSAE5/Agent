@@ -1,15 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export default function Login({ navigation }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          const { name, password } = JSON.parse(userData);
+          setName(name);
+          setPassword(password);
+          setStayLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Failed to load user data", error);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://192.168.1.97:3000/ag/login', { name, password });
       if (response.status === 200) {
+        if (stayLoggedIn) {
+          await AsyncStorage.setItem('user', JSON.stringify({ name, password }));
+        } else {
+          await AsyncStorage.removeItem('user');
+        }
         navigation.replace("Research");
       }
     } catch (error) {
@@ -24,7 +49,7 @@ export default function Login({ navigation }) {
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Nom"
+          placeholder="Name"
           value={name}
           onChangeText={setName}
           autoCapitalize="none"
@@ -36,6 +61,12 @@ export default function Login({ navigation }) {
           onChangeText={setPassword}
           secureTextEntry
         />
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
+            <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
+          </TouchableOpacity>
+          <Text style={styles.label}>Rester connecté</Text>
+        </View>
         <TouchableOpacity
           style={styles.buttonPrimary}
           onPress={handleLogin}
@@ -68,6 +99,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  checkbox: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  label: {
+    fontSize: 16,
   },
   buttonPrimary: {
     backgroundColor: "#007BFF",

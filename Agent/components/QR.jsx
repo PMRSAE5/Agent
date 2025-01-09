@@ -1,10 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Home({ navigation }) {
+export default function QR({ navigation }) {
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          setUserInfo(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.error("Failed to load user data", error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>QR</Text>
+      {userInfo ? (
+        <View>
+          <Text>Name: {userInfo.name}</Text>
+          <Text>Password: {userInfo.password}</Text>
+        </View>
+      ) : (
+        <Text>No user data found</Text>
+      )}
     </View>
   );
 }
