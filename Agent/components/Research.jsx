@@ -2,20 +2,21 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button, FlatList, TouchableOpacity, Modal } from "react-native";
 
 export default function Home({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // Stocker la requête de recherche
+  const [results, setResults] = useState([]); // Stocker les résultats de la recherche
   const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTrajet, setSelectedTrajet] = useState(null);
+  const [selectedTrajet, setSelectedTrajet] = useState(null); // Stocker le trajet sélectionné pour afficher les détails
 
+  // Fonction pour gérer la recherche
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://192.168.1.97:3000/traj/trajet/${searchQuery}`);
+      const response = await fetch(`http://192.168.1.97:3001/traj/trajet/${searchQuery}`);
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      setResults(data);
+      setResults(data); // Mettre à jour les résultats
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -23,9 +24,10 @@ export default function Home({ navigation }) {
     }
   };
 
+// Fonction pour afficher les détails du trajet
   const handleTrajetPress = (trajet) => {
-    setSelectedTrajet(trajet);
-    setModalVisible(true);
+    setSelectedTrajet(trajet); // Mettre à jour le trajet sélectionné
+    setModalVisible(true); // Afficher le modal
   };
 
   const renderTrajetDetails = () => {

@@ -4,24 +4,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export default function Login({ navigation }) {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const [name, setName] = useState(""); // Sotcker le nom d'utilisateur
+  const [password, setPassword] = useState(""); // Stocker le mot de passe
+  const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
 
   useEffect(() => {
+    // Charger les infos de l'utilisateur depuis AsyncStorage
     const loadUserData = async () => {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
           const { name, password, agentId } = JSON.parse(userData);
-          setName(name);
-          setPassword(password);
-          setStayLoggedIn(true);
+          setName(name); // Pré remplir le nom
+          setPassword(password); // Pré remplir le mot de passe
+          setStayLoggedIn(true); // Cocher "rester connecté"
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
             const { agentId } = JSON.parse(agentIdData);
-            console.log("Loaded agentId:", agentId);
+            console.log("Loaded agentId:", agentId); // Afficher l'ID de l'agent dans les logs
           }
         }
       } catch (error) {
@@ -32,25 +33,29 @@ export default function Login({ navigation }) {
     loadUserData();
   }, []);
 
+  // Fonction pour gérer la connexion
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.97:3000/ag/login', { name, password });
+      // Envoyer la requête de connexion
+      const response = await axios.post('http://192.168.1.97:3001/ag/login', { name, password });
       if (response.status === 200) {
-        const agentIdResponse = await axios.get(`http://192.168.1.97:3000/ag/agentId/${name}`);
+        // Récupérer l'ID de l'agent
+        const agentIdResponse = await axios.get(`http://192.168.1.97:3001/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
 
         // Toujours enregistrer l'ID de l'agent
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
         if (stayLoggedIn) {
+          // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
           await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
         } else {
           await AsyncStorage.removeItem('user');
         }
-        navigation.replace("Research");
+        navigation.replace("Research"); // Rediriger vers la page de recherche
       }
     } catch (error) {
-      Alert.alert("Login Failed", "Invalid name or password");
+      Alert.alert("Erreur du login", "Nom invalide ou le mdp");
     }
   };
 
