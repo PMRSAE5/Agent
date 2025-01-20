@@ -37,10 +37,10 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     try {
       // Envoyer la requête de connexion
-      const response = await axios.post('http://192.168.1.97:3001/ag/login', { name, password });
+      const response = await axios.post('http://192.168.1.96:3000/ag/login', { name, password }); // ip config dans la machine
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://192.168.1.97:3001/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://192.168.1.96:3000/ag/agentId/${name}`); // ip config dans la machine
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
 
         // Toujours enregistrer l'ID de l'agent
