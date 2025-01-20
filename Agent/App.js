@@ -16,6 +16,7 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState("Login");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Vérifier si l'utilisateur est connecté
   useEffect(() => {
     const checkUser = async () => {
       const user = await AsyncStorage.getItem("user");
@@ -28,62 +29,62 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
-        {/* Login */}
-        <Stack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-        >
-          {(props) => (
-            <Login
-              {...props}
-              onLoginSuccess={() => {
-                setIsLoggedIn(true);
-                setInitialRoute("Home");
-              }}
-            />
-          )}
-        </Stack.Screen>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={initialRoute}>
+          {/* Login */}
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: false }}
+          >
+            {(props) => (
+              <Login
+                {...props}
+                onLoginSuccess={() => {
+                  setIsLoggedIn(true);
+                  setInitialRoute("Home");
+                }}
+              />
+            )}
+          </Stack.Screen>
 
-        {/* Home */}
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
+          {/* Home */}
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
 
-        {/* Research */}
-        <Stack.Screen
-          name="Research"
-          component={Research}
-          options={{ headerShown: false }}
-        />
+          {/* Research */}
+          <Stack.Screen
+            name="Research"
+            component={Research}
+            options={{ headerShown: false }}
+          />
 
-        {/* QR */}
-        <Stack.Screen
-          name="QR"
-          component={QR}
-          options={{ headerShown: false }}
-        />
+          {/* QR */}
+          <Stack.Screen
+            name="QR"
+            component={QR}
+            options={{ headerShown: false }}
+          />
 
-        {/* Profile */}
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ headerShown: false }}
-        />
+          {/* Profile */}
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ headerShown: false }}
+          />
 
-        {/* Settings */}
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
+          {/* Settings */}
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
 
-      {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
-      {isLoggedIn && <NavBar />}
-    </NavigationContainer>
+        {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
+        {isLoggedIn && <NavBar />}
+      </NavigationContainer>
   );
 }
