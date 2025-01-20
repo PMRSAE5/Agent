@@ -1,22 +1,24 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button, FlatList, TouchableOpacity, Modal } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal } from "react-native";
 
-export default function Home({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState(""); // Stocker la requête de recherche
-  const [results, setResults] = useState([]); // Stocker les résultats de la recherche
+export default function Research({ navigation }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTrajet, setSelectedTrajet] = useState(null); // Stocker le trajet sélectionné pour afficher les détails
+  const [selectedTrajet, setSelectedTrajet] = useState(null);
 
   // Fonction pour gérer la recherche
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://192.168.1.97:3001/traj/trajet/${searchQuery}`);
+      const response = await fetch(
+        `http://192.168.1.97:3001/traj/trajet/${searchQuery}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      setResults(data); // Mettre à jour les résultats
+      setResults(data);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -24,10 +26,10 @@ export default function Home({ navigation }) {
     }
   };
 
-// Fonction pour afficher les détails du trajet
+  // Fonction pour afficher les détails du trajet
   const handleTrajetPress = (trajet) => {
-    setSelectedTrajet(trajet); // Mettre à jour le trajet sélectionné
-    setModalVisible(true); // Afficher le modal
+    setSelectedTrajet(trajet);
+    setModalVisible(true);
   };
 
   const renderTrajetDetails = () => {
@@ -35,55 +37,57 @@ export default function Home({ navigation }) {
 
     return (
       <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Détails du Trajet</Text>
-        {selectedTrajet.trajet && selectedTrajet.trajet.map((etape, index) => (
+        <Text style={styles.modalTitle}>Trajet Details</Text>
+        {selectedTrajet.trajet?.map((etape, index) => (
           <View key={index} style={styles.etapeContainer}>
-            <Text>{`Étape ${etape.num_etape}`}</Text>
-            <Text>{`Départ: ${etape.lieu_depart}`}</Text>
-            <Text>{`Heure de départ: ${etape.heure_depart}`}</Text>
-            <Text>{`Arrivée: ${etape.lieu_arrivee}`}</Text>
-            <Text>{`Heure d'arrivée: ${etape.heure_arrivee}`}</Text>
-            <Text>{`Transporteur: ${etape.transporteur}`}</Text>
+            <Text style={styles.detailText}>Étape {etape.num_etape}</Text>
+            <Text style={styles.detailText}>Départ : {etape.lieu_depart}</Text>
+            <Text style={styles.detailText}>Heure de départ : {etape.heure_depart}</Text>
+            <Text style={styles.detailText}>Arrivée : {etape.lieu_arrivee}</Text>
+            <Text style={styles.detailText}>Heure d'arrivée : {etape.heure_arrivee}</Text>
+            <Text style={styles.detailText}>Transporteur : {etape.transporteur}</Text>
           </View>
         ))}
-        <Text style={styles.modalSubtitle}>Bagages</Text>
-        {selectedTrajet.bagage && selectedTrajet.bagage.map((bag, index) => (
-          <View key={index} style={styles.bagageContainer}>
-            <Text>{`ID Bagage: ${bag.id_bagage}`}</Text>
-          </View>
-        ))}
-        <Text style={styles.modalSubtitle}>Papiers</Text>
-        {selectedTrajet.papier && selectedTrajet.papier.map((paper, index) => (
-          <View key={index} style={styles.papierContainer}>
-            <Text>{`Catégorie: ${paper.categorie}`}</Text>
-          </View>
-        ))}
-        <Button title="Fermer" onPress={() => setModalVisible(false)} />
+        <TouchableOpacity
+          style={styles.buttonClose}
+          onPress={() => setModalVisible(false)}
+        >
+          <Text style={styles.buttonText}>Fermer</Text>
+        </TouchableOpacity>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Rechercher un Trajet</Text>
       <TextInput
         style={styles.input}
-        placeholder="Rechercher"
+        placeholder="Entrez une gare ou un trajet"
         keyboardType="default"
         autoCapitalize="none"
         value={searchQuery}
         onChangeText={setSearchQuery}
+        placeholderTextColor="#A5A5A5"
       />
-      <Button title="Search" onPress={handleSearch} />
+      <TouchableOpacity style={styles.button} onPress={handleSearch}>
+        <Text style={styles.buttonText}>Rechercher</Text>
+      </TouchableOpacity>
       {error && <Text style={styles.error}>{error}</Text>}
       <FlatList
         data={results}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleTrajetPress(item)}>
-            <View style={styles.resultItem}>
-              <Text>{`Départ: ${item.lieu_depart}, Arrivée: ${item.lieu_arrivee}`}</Text>
-              <Text>{`Heure de départ: ${item.heure_depart}, Heure d'arrivée: ${item.heure_arrivee}`}</Text>
-            </View>
+          <TouchableOpacity
+            style={styles.resultItem}
+            onPress={() => handleTrajetPress(item)}
+          >
+            <Text style={styles.resultTitle}>
+              Départ : {item.lieu_depart}, Arrivée : {item.lieu_arrivee}
+            </Text>
+            <Text style={styles.resultSubtitle}>
+              {item.heure_depart} - {item.heure_arrivee}
+            </Text>
           </TouchableOpacity>
         )}
       />
@@ -101,48 +105,83 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#FFF6F1",
     padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#EF4D20",
+    marginBottom: 16,
+    textAlign: "center",
   },
   input: {
     width: "100%",
-    padding: 8,
+    padding: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#EF4D20",
+    borderRadius: 8,
+    marginBottom: 16,
+    backgroundColor: "#FFFFFF",
+    fontSize: 16,
+    color: "#000",
+  },
+  button: {
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
     marginBottom: 16,
   },
+  buttonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
   error: {
-    color: "red",
+    color: "#EF4D20",
+    textAlign: "center",
     marginBottom: 16,
   },
   resultItem: {
+    backgroundColor: "#FFFFFF",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    marginBottom: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#EF4D20",
+    elevation: 2,
+  },
+  resultTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#EF4D20",
+  },
+  resultSubtitle: {
+    fontSize: 14,
+    color: "#555",
   },
   modalContent: {
     flex: 1,
+    backgroundColor: "#FFF6F1",
     padding: 16,
-    justifyContent: "center",
-    alignItems: "center",
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#EF4D20",
     marginBottom: 16,
   },
-  modalSubtitle: {
-    fontSize: 18,
+  detailText: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 8,
+  },
+  buttonClose: {
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
     marginTop: 16,
-    marginBottom: 8,
-  },
-  etapeContainer: {
-    marginBottom: 16,
-  },
-  bagageContainer: {
-    marginBottom: 8,
-  },
-  papierContainer: {
-    marginBottom: 8,
   },
 });
