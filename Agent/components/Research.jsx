@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal, Alert, } from "react-native";
 
 export default function Research({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -7,6 +7,25 @@ export default function Research({ navigation }) {
   const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTrajet, setSelectedTrajet] = useState(null);
+  const [todayTrajets, setTodayTrajets] = useState([]); // Nouvel état pour les trajets du jour
+
+  // // Charger les trajets du jour au montage du composant
+  // useEffect(() => {
+  //   const fetchTodayTrajets = async () => {
+  //     try {
+  //       const response = await fetch(`http://192.168.1.96:3000/traj/trajet/today`);
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch today's trajets");
+  //       }
+  //       const data = await response.json();
+  //       setTodayTrajets(data);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
+
+  //   fetchTodayTrajets();
+  // }, []);
 
   // Fonction pour gérer la recherche
   const handleSearch = async () => {
@@ -26,6 +45,27 @@ export default function Research({ navigation }) {
     }
   };
 
+  // Gérer la décision
+  const handleDecision = async (id, decision) => {
+    try {
+      const response = await fetch(
+        `http://192.168.1.96:3000/traj/trajet/${id}/decision`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ decision }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update trajet");
+      }
+      Alert.alert("Success", `Trajet ${decision}ed successfully`);
+      handleSearch(); // Rafraîchir la liste
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
+  };
+
   // Fonction pour afficher les détails du trajet
   const handleTrajetPress = (trajet) => {
     setSelectedTrajet(trajet);
@@ -37,7 +77,7 @@ export default function Research({ navigation }) {
 
     return (
       <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Trajet Details</Text>
+        <Text style={styles.modalTitle}>Details du Trajet</Text>
         {selectedTrajet.trajet?.map((etape, index) => (
           <View key={index} style={styles.etapeContainer}>
             <Text style={styles.detailText}>Étape {etape.num_etape}</Text>
@@ -53,6 +93,13 @@ export default function Research({ navigation }) {
           onPress={() => setModalVisible(false)}
         >
           <Text style={styles.buttonText}>Fermer</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("QR")}
+        >
+          <Text style={styles.buttonText}>Scanner le QR Code</Text>
         </TouchableOpacity>
       </View>
     );
@@ -74,8 +121,9 @@ export default function Research({ navigation }) {
         <Text style={styles.buttonText}>Rechercher</Text>
       </TouchableOpacity>
       {error && <Text style={styles.error}>{error}</Text>}
+      <Text style={styles.subtitle}>Trajets du jour :</Text>
       <FlatList
-        data={results}
+        data={todayTrajets}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -89,6 +137,35 @@ export default function Research({ navigation }) {
               {item.heure_depart} - {item.heure_arrivee}
             </Text>
           </TouchableOpacity>
+        )}
+      />
+      <Text style={styles.subtitle}>Résultats de la recherche :</Text>
+      <FlatList
+        data={results}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.resultItem}>
+            <Text style={styles.resultTitle}>
+              Départ : {item.lieu_depart}, Arrivée : {item.lieu_arrivee}
+            </Text>
+            <Text style={styles.resultSubtitle}>
+              {item.heure_depart} - {item.heure_arrivee}
+            </Text>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={[styles.button, styles.acceptButton]}
+                onPress={() => handleDecision(item.id, "accept")}
+              >
+                <Text style={styles.buttonText}>Accepter</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.rejectButton]}
+                onPress={() => handleDecision(item.id, "reject")}
+              >
+                <Text style={styles.buttonText}>Refuser</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       />
       <Modal

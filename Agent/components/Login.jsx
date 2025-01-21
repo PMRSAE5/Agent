@@ -51,7 +51,7 @@ export default function Login({ navigation }) {
       const response = await axios.post('http://172.20.10.11:3001/ag/login', { name, password });
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://172.20.10.11:3001/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://192.168.1.97:3001/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
 
         // Toujours enregistrer l'ID de l'agent
