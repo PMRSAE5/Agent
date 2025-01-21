@@ -7,6 +7,8 @@ import Login from './components/Login';
 import Research from './components/Research';
 import Profile from './components/Profile';
 import QR from './components/QR';
+import SplashScreen from "./components/SplashScreen.jsx";
+import FaceRecognition from './components/FaceRecognition';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -17,6 +19,7 @@ function Tabs() {
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
       <Tab.Screen name="QR" component={QR} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+      <Tab.Screen name="FaceRecognition" component={FaceRecognition} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -36,7 +39,13 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
+      <Stack.Navigator initialRouteName="SplashScreen">
+            <Stack.Screen
+              name="SplashScreen"
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
+            
         <Stack.Screen
           name="Login"
           component={Login}
