@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal, Alert, } from "react-native";
+import { LOCAL_MACHINE_HOST } from '@env';
 
 export default function Research({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,7 +14,7 @@ export default function Research({ navigation }) {
   // useEffect(() => {
   //   const fetchTodayTrajets = async () => {
   //     try {
-  //       const response = await fetch(`http://192.168.1.96:3000/traj/trajet/today`);
+  //       const response = await fetch(`${LOCAL_MACHINE_HOST}/traj/trajet/today`);
   //       if (!response.ok) {
   //         throw new Error("Failed to fetch today's trajets");
   //       }
@@ -31,7 +32,7 @@ export default function Research({ navigation }) {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://172.20.10.11:3001/traj/trajet/${searchQuery}`
+        `${LOCAL_MACHINE_HOST}/traj/trajet/${searchQuery}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
@@ -49,7 +50,7 @@ export default function Research({ navigation }) {
   const handleDecision = async (id, decision) => {
     try {
       const response = await fetch(
-        `http://192.168.1.96:3000/traj/trajet/${id}/decision`,
+        `${LOCAL_MACHINE_HOST}/traj/trajet/${id}/decision`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { LOCAL_MACHINE_HOST } from '@env';
 
 export default function Login({ navigation }) {
   const [name, setName] = useState(""); // Stocker le nom d'utilisateur
@@ -48,10 +49,10 @@ export default function Login({ navigation }) {
       }
   
       // Envoyer la requête de connexion
-      const response = await axios.post('http://172.20.10.11:3001/ag/login', { name, password });
+      const response = await axios.post(`${LOCAL_MACHINE_HOST}/ag/login`, { name, password });
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://192.168.1.97:3001/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`${LOCAL_MACHINE_HOST}/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
 
         // Toujours enregistrer l'ID de l'agent
