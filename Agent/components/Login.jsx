@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export default function Login({ navigation }) {
-  const [name, setName] = useState(""); // Sotcker le nom d'utilisateur
+  const [name, setName] = useState(""); // Stocker le nom d'utilisateur
   const [password, setPassword] = useState(""); // Stocker le mot de passe
   const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
 
@@ -18,6 +18,7 @@ export default function Login({ navigation }) {
           setName(name); // Pré remplir le nom
           setPassword(password); // Pré remplir le mot de passe
           setStayLoggedIn(true); // Cocher "rester connecté"
+          console.log(name,password)
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
@@ -35,12 +36,22 @@ export default function Login({ navigation }) {
 
   // Fonction pour gérer la connexion
   const handleLogin = async () => {
+    // Vérifiez les valeurs avant d'envoyer la requête
+    console.log("Nom d'utilisateur : ", name);
+    console.log("Mot de passe : ", password);
+  
     try {
+      // Vérifiez si les champs sont remplis avant d'envoyer la requête
+      if (!name || !password) {
+        Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+        return;
+      }
+  
       // Envoyer la requête de connexion
-      const response = await axios.post('http://192.168.1.97:3001/ag/login', { name, password });
+      const response = await axios.post('http://172.20.10.11:3001/ag/login', { name, password });
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://192.168.1.97:3001/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://172.20.10.11:3001/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
 
         // Toujours enregistrer l'ID de l'agent
@@ -55,18 +66,25 @@ export default function Login({ navigation }) {
         navigation.replace("Research"); // Rediriger vers la page de recherche
       }
     } catch (error) {
-      Alert.alert("Erreur du login", "Nom invalide ou le mdp");
+      Alert.alert("Erreur du login", "Nom ou mot de passe invalide.");
     }
-  };
+  }; 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agent</Text>
+      
+      {/* Logo au-dessus du formulaire */}
+      <Image
+        source={require("../assets/PMoveLogoSANSTITRE.png")} // Remplacer par votre nouvelle image
+        style={styles.logo}
+      />
+
+      <Text style={styles.title}>Connexion Agent</Text>
 
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Nom d'utilisateur"
           value={name}
           onChangeText={setName}
           autoCapitalize="none"
@@ -98,13 +116,23 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#FFF6F1", // Fond de la page
     padding: 16,
+    justifyContent: "center", // Centrer verticalement
+    alignItems: "center", // Centrer horizontalement
   },
+  logo: {
+    width: 200, // Taille de l'image
+    height: 200, // Taille de l'image
+    marginBottom: 0, // Espace sous l'image
+  },
+
   title: {
     fontSize: 24,
-    marginBottom: 24,
+    fontWeight: "bold",
+    color: "#EF4D20", // Couleur du titre
+    marginBottom: 16,
+    textAlign: "center",
   },
   formContainer: {
     width: "100%",
@@ -112,10 +140,14 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: "#EF4D20", // Bordure des champs
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+    backgroundColor: "#FFFFFF",
+    fontSize: 16,
+    color: "#000", // Texte des champs
+    borderRadius: 8,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -128,15 +160,23 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    color: "#555",
   },
   buttonPrimary: {
-    backgroundColor: "#007BFF",
-    padding: 10,
+    backgroundColor: "#EF4D20", // Couleur du bouton
+    padding: 12,
+    borderRadius: 8,
     alignItems: "center",
-    borderRadius: 5,
+    marginBottom: 16,
   },
   buttonTextPrimary: {
-    color: "#FFFFFF",
+    color: "#FFFFFF", // Couleur du texte du bouton
+    fontWeight: "bold",
     fontSize: 16,
+  },
+  error: {
+    color: "#EF4D20",
+    textAlign: "center",
+    marginBottom: 16,
   },
 });

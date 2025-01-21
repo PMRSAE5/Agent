@@ -12,7 +12,7 @@ export default function Research({ navigation }) {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.97:3001/traj/trajet/${searchQuery}`
+        `http://172.20.10.11:3001/traj/trajet/${searchQuery}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
