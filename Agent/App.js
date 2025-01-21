@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react'; // Ajoutez cette ligne
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,7 +10,8 @@ import Settings from "./components/Settings";
 import Research from './components/Research';
 import Profile from './components/Profile';
 import NavBar from "./components/Navbar";
-import QR from './components/QR';
+import SplashScreen from "./components/SplashScreen";
+// import QR from './components/QR';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,7 +55,7 @@ export default function App() {
         
         <Stack.Screen
           name="Login"
-          component={Login}
+          component={Home}
           options={{ headerShown: false }}
         />
 
@@ -72,11 +74,11 @@ export default function App() {
           />
 
           {/* QR */}
-          <Stack.Screen
+          {/* <Stack.Screen
             name="QR"
             component={QR}
             options={{ headerShown: false }}
-          />
+          /> */}
 
           {/* Profile */}
           <Stack.Screen
