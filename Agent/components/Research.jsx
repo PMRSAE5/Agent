@@ -1,166 +1,169 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal, Alert, } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  Alert,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 export default function Research({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTrajet, setSelectedTrajet] = useState(null);
-  const [todayTrajets, setTodayTrajets] = useState([]); // Nouvel état pour les trajets du jour
+  const [role, setRole] = useState(null); // Rôle de l'agent (RATP, SNCF, AirFrance)
+  const [searchQuery, setSearchQuery] = useState(""); // Terme de recherche
+  const [reservations, setReservations] = useState([]); // Liste des réservations
+  const [selectedTrajet, setSelectedTrajet] = useState(null); // Trajet sélectionné
+  const [modalVisible, setModalVisible] = useState(false); // Visibilité de la modal
 
-  // // Charger les trajets du jour au montage du composant
-  // useEffect(() => {
-  //   const fetchTodayTrajets = async () => {
-  //     try {
-  //       const response = await fetch(`http://192.168.1.96:3000/traj/trajet/today`);
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch today's trajets");
-  //       }
-  //       const data = await response.json();
-  //       setTodayTrajets(data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-
-  //   fetchTodayTrajets();
-  // }, []);
-
-  // Fonction pour gérer la recherche
-  const handleSearch = async () => {
+  // Récupérer les réservations correspondant au lieu de départ
+  const handleSearch = async (query) => {
     try {
       const response = await fetch(
-        `http://172.20.10.11:3001/traj/trajet/${searchQuery}`
+        `http://172.20.10.11:3000/reservation/getByPoint?pmr_point_id=${query}`
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
       const data = await response.json();
-      setResults(data);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-      setResults([]);
+  
+      if (response.ok) {
+        setReservations(data);
+      } else {
+        Alert.alert("Erreur", data.message || "Aucune réservation trouvée pour ce lieu.");
+        setReservations([]);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des réservations :", error);
+      Alert.alert("Erreur", "Une erreur est survenue lors de la récupération des réservations.");
     }
   };
+  
+  
 
-  // Gérer la décision
-  const handleDecision = async (id, decision) => {
+  // Gérer la décision de refuser une réservation
+  const handleRefuse = (reservationId) => {
+    setReservations((prevReservations) =>
+      prevReservations.filter((reservation) => reservation.id !== reservationId)
+    );
+    Alert.alert("Succès", "Réservation refusée avec succès.");
+  };
+
+  // Gérer la décision de valider une réservation
+  const handleAccept = async (reservationId) => {
     try {
       const response = await fetch(
-        `http://192.168.1.96:3000/traj/trajet/${id}/decision`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ decision }),
-        }
+        `http://172.20.10.11:3000/reservation/getById?id=${reservationId}`
       );
+  
       if (!response.ok) {
-        throw new Error("Failed to update trajet");
+        const errorText = await response.text();
+        console.error("Erreur serveur :", errorText);
+        Alert.alert("Erreur", "Impossible de récupérer les détails de la réservation.");
+        return;
       }
-      Alert.alert("Success", `Trajet ${decision}ed successfully`);
-      handleSearch(); // Rafraîchir la liste
-    } catch (err) {
-      Alert.alert("Error", err.message);
+  
+      const { reservation } = await response.json();
+  
+      // Afficher les informations détaillées dans un Alert ou rediriger vers une page dédiée
+      Alert.alert(
+        "Détails de la réservation",
+        `Nom : ${reservation.name}
+        Prénom : ${reservation.surname}
+        Téléphone : ${reservation.phone}
+        Lieu de départ : ${reservation.lieu_depart}
+        Lieu d'arrivée : ${reservation.lieu_arrivee}
+        Heure de départ : ${reservation.heure_depart}
+        Type de handicap : ${reservation.handicap_type}
+        Nombre de bagages : ${reservation.numBags}`,
+        [
+          {
+            text: "Commencer l'accompagnement",
+            onPress: () => navigation.navigate("StartAssistance", { reservationId }),
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Erreur lors de la récupération des détails de la réservation :", error);
+      Alert.alert("Erreur", "Une erreur est survenue lors de la récupération des détails de la réservation.");
     }
   };
-
-  // Fonction pour afficher les détails du trajet
-  const handleTrajetPress = (trajet) => {
-    setSelectedTrajet(trajet);
-    setModalVisible(true);
-  };
-
+  
+  // Afficher les détails du trajet dans une modal
   const renderTrajetDetails = () => {
     if (!selectedTrajet) return null;
 
     return (
       <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Details du Trajet</Text>
-        {selectedTrajet.trajet?.map((etape, index) => (
-          <View key={index} style={styles.etapeContainer}>
-            <Text style={styles.detailText}>Étape {etape.num_etape}</Text>
-            <Text style={styles.detailText}>Départ : {etape.lieu_depart}</Text>
-            <Text style={styles.detailText}>Heure de départ : {etape.heure_depart}</Text>
-            <Text style={styles.detailText}>Arrivée : {etape.lieu_arrivee}</Text>
-            <Text style={styles.detailText}>Heure d'arrivée : {etape.heure_arrivee}</Text>
-            <Text style={styles.detailText}>Transporteur : {etape.transporteur}</Text>
-          </View>
-        ))}
-        <TouchableOpacity
-          style={styles.buttonClose}
-          onPress={() => setModalVisible(false)}
-        >
+        <Text style={styles.modalTitle}>Détails du Trajet</Text>
+        <Text style={styles.detailText}>Point de récupération : {selectedTrajet.trajet.point}</Text>
+        <Text style={styles.detailText}>Heure : {selectedTrajet.trajet.heure}</Text>
+        <Text style={styles.detailText}>Nom : {selectedTrajet.client_name}</Text>
+        <Text style={styles.detailText}>Prénom : {selectedTrajet.client_surname}</Text>
+        <Text style={styles.detailText}>Téléphone : {selectedTrajet.client_phone}</Text>
+        <Text style={styles.detailText}>Type de handicap : {selectedTrajet.handicap_type}</Text>
+        <Text style={styles.detailText}>Nombre de bagages : {selectedTrajet.baggage_count}</Text>
+        <TouchableOpacity style={styles.buttonClose} onPress={() => setModalVisible(false)}>
           <Text style={styles.buttonText}>Fermer</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("QR")}
-        >
-          <Text style={styles.buttonText}>Scanner le QR Code</Text>
         </TouchableOpacity>
       </View>
     );
   };
 
+  if (!role) {
+    return (
+      <View style={styles.roleSelectionContainer}>
+        <Text style={styles.roleSelectionTitle}>Choisissez votre rôle :</Text>
+        <TouchableOpacity style={styles.roleButton} onPress={() => setRole("RATP")}>
+          <Text style={styles.roleButtonText}>Agent RATP</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.roleButton} onPress={() => setRole("SNCF")}>
+          <Text style={styles.roleButtonText}>Agent SNCF</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.roleButton} onPress={() => setRole("AirFrance")}>
+          <Text style={styles.roleButtonText}>Agent AirFrance</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Rechercher un Trajet</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Entrez une gare ou un trajet"
-        keyboardType="default"
-        autoCapitalize="none"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholderTextColor="#A5A5A5"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSearch}>
-        <Text style={styles.buttonText}>Rechercher</Text>
-      </TouchableOpacity>
-      {error && <Text style={styles.error}>{error}</Text>}
-      <Text style={styles.subtitle}>Trajets du jour :</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Rechercher un lieu de départ..."
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          onSubmitEditing={() => handleSearch(searchQuery)}
+          placeholderTextColor="#A5A5A5"
+        />
+      </View>
+
       <FlatList
-        data={todayTrajets}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.resultItem}
-            onPress={() => handleTrajetPress(item)}
-          >
-            <Text style={styles.resultTitle}>
-              Départ : {item.lieu_depart}, Arrivée : {item.lieu_arrivee}
-            </Text>
-            <Text style={styles.resultSubtitle}>
-              {item.heure_depart} - {item.heure_arrivee}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-      <Text style={styles.subtitle}>Résultats de la recherche :</Text>
-      <FlatList
-        data={results}
-        keyExtractor={(item, index) => index.toString()}
+        data={reservations}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.resultItem}>
-            <Text style={styles.resultTitle}>
-              Départ : {item.lieu_depart}, Arrivée : {item.lieu_arrivee}
-            </Text>
-            <Text style={styles.resultSubtitle}>
-              {item.heure_depart} - {item.heure_arrivee}
-            </Text>
+            <Text style={styles.resultTitle}>Réservation #{item.id}</Text>
+            <TouchableOpacity style={styles.trajetContainer} onPress={() => setSelectedTrajet(item)}>
+              <Text style={styles.resultSubtitle}>
+                Point de récupération : {item.trajet.point} - Heure : {item.trajet.heure}
+              </Text>
+            </TouchableOpacity>
             <View style={styles.actions}>
               <TouchableOpacity
                 style={[styles.button, styles.acceptButton]}
-                onPress={() => handleDecision(item.id, "accept")}
+                onPress={() => handleAccept(item.id)}
               >
-                <Text style={styles.buttonText}>Accepter</Text>
+                <Text style={styles.buttonText}>Valider</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.rejectButton]}
-                onPress={() => handleDecision(item.id, "reject")}
+                onPress={() => handleRefuse(item.id)}
               >
                 <Text style={styles.buttonText}>Refuser</Text>
               </TouchableOpacity>
@@ -168,62 +171,88 @@ export default function Research({ navigation }) {
           </View>
         )}
       />
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
+
+      <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
         {renderTrajetDetails()}
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
-    padding: 16,
   },
-  title: {
-    fontSize: 24,
+  roleSelectionContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFF6F1",
+  },
+  roleSelectionTitle: {
+    fontSize: 20,
     fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 16,
-    textAlign: "center",
+    marginBottom: 20,
   },
-  input: {
-    width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#EF4D20",
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: "#FFFFFF",
-    fontSize: 16,
-    color: "#000",
-  },
-  button: {
+  roleButton: {
     backgroundColor: "#EF4D20",
-    padding: 12,
+    padding: 15,
     borderRadius: 8,
+    marginVertical: 10,
+    width: "60%",
     alignItems: "center",
-    marginBottom: 16,
   },
-  buttonText: {
+  roleButtonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
   },
-  error: {
-    color: "#EF4D20",
-    textAlign: "center",
-    marginBottom: 16,
+  centeredContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchContainer: {
+    width: "90%",
+    padding: 16,
+    backgroundColor: "#FFF6F1",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EF4D20",
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#EF4D20",
+    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    fontSize: 16,
+    color: "#000",
+  },
+  suggestionsList: {
+    width: "90%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#EF4D20",
+  },
+  suggestionItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EF4D20",
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: "#000",
   },
   resultItem: {
     backgroundColor: "#FFFFFF",
     padding: 16,
-    marginBottom: 8,
+    margin: 16,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#EF4D20",
@@ -237,6 +266,20 @@ const styles = StyleSheet.create({
   resultSubtitle: {
     fontSize: 14,
     color: "#555",
+  },
+  trajetContainer: {
+    marginTop: 10,
+  },
+  actions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  acceptButton: {
+    backgroundColor: "green",
+  },
+  rejectButton: {
+    backgroundColor: "red",
   },
   modalContent: {
     flex: 1,
@@ -260,5 +303,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 16,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
