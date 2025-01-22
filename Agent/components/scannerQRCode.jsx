@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
-import { Camera } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 
-const scannerQRCode = ({ navigation }) => {
+const ScannerQRCode = ({ navigation }) => {
   // État pour vérifier la permission de la caméra et si un QR Code a été scanné
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -10,7 +10,7 @@ const scannerQRCode = ({ navigation }) => {
   // Demander la permission d'utiliser la caméra
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
   }, []);
@@ -36,12 +36,14 @@ const scannerQRCode = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.topText}>Scanner un QR Code</Text>
-      <Camera
+      <CameraView
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject} // Pleine taille de l'écran
       />
-      {scanned && (
-        <Button title={'Scanner à nouveau'} onPress={() => setScanned(false)} />
+       {scanned && (
+        <TouchableOpacity style={styles.scanButton} onPress={() => setScanned(false)}>
+          <Text style={styles.scanButtonText}>Scanner à nouveau</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -52,14 +54,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F5F5F5",
   },
   topText: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     padding: 16,
     color: "#EF4D20",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  scanButton: {
+    position: "absolute",
+    bottom: 50,
+    backgroundColor: "#EF4D20",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  scanButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
-export default scannerQRCode;
+export default ScannerQRCode;
