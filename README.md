@@ -31,3 +31,5 @@ npm install @react-navigation/stack
 npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
 
 ```
+
+Modifier les adresses IP en fonction de votre adresse ip local sur laquelle vous travaillez pour la page login.

@@ -14,7 +14,7 @@ import NavBar from "./components/Navbar";
 import scannerQRCode from './components/scannerQRCode';
 import FiltragePAX from './components/FiltragePAX';
 import FaceRecognition from './components/FaceRecognition';
-
+import { ThemeProvider, ThemeContext } from "./ThemeContext";
 
 const Stack = createStackNavigator();
 
@@ -34,6 +34,7 @@ export default function App() {
   }, []);
 
   return (
+    <ThemeProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="SplashScreen">
         {/* SplashScreen */}
@@ -75,5 +76,6 @@ export default function App() {
       {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
       {isLoggedIn && <NavBar />}
     </NavigationContainer>
+    </ThemeProvider>
   );
 }

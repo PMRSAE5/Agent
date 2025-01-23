@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { LOCAL_MACHINE_HOST } from '@env';
 
 export default function Login({ navigation }) {
   const [name, setName] = useState(""); // Stocker le nom d'utilisateur
@@ -19,7 +18,7 @@ export default function Login({ navigation }) {
           setName(name); // Pré remplir le nom
           setPassword(password); // Pré remplir le mot de passe
           setStayLoggedIn(true); // Cocher "rester connecté"
-          console.log(name,password)
+          console.log(name, password);
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
@@ -40,43 +39,46 @@ export default function Login({ navigation }) {
     // Vérifiez les valeurs avant d'envoyer la requête
     console.log("Nom d'utilisateur : ", name);
     console.log("Mot de passe : ", password);
-  
+    console.log("Connecting to: http://192.168.1.96:3000");
+
     try {
-      // Vérifiez si les champs sont remplis avant d'envoyer la requête
-      if (!name || !password) {
+    // Vérifiez si les champs sont remplis avant d'envoyer la requête
+    if (!name || !password) {
         Alert.alert("Erreur", "Veuillez remplir tous les champs.");
         return;
-      }
-  
-      // Envoyer la requête de connexion
-      const response = await axios.post(`${LOCAL_MACHINE_HOST}/ag/login`, { name, password });
+    }
+
+      const response = await axios.post('http://192.168.1.96:3000/ag/login', { name, password });
+      console.log("Response from login:", response.data);
+
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`${LOCAL_MACHINE_HOST}/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://192.168.1.96:3000/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
+        console.log("Agent ID response:", agentIdResponse.data);
 
         // Toujours enregistrer l'ID de l'agent
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
         if (stayLoggedIn) {
-          // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
+        // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
           await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
         } else {
           await AsyncStorage.removeItem('user');
         }
-        navigation.replace("Research"); // Rediriger vers la page de recherche
+        navigation.replace("Home");
       }
     } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
       Alert.alert("Erreur du login", "Nom ou mot de passe invalide.");
     }
-  }; 
+  };
 
   return (
     <View style={styles.container}>
-      
       {/* Logo au-dessus du formulaire */}
       <Image
-        source={require("../assets/PMoveLogoSANSTITRE.png")} // Remplacer par votre nouvelle image
+        source={require("../assets/PMoveLogoSANSTITRE.png")}
         style={styles.logo}
       />
 
@@ -127,7 +129,6 @@ const styles = StyleSheet.create({
     height: 200, // Taille de l'image
     marginBottom: 0, // Espace sous l'image
   },
-
   title: {
     fontSize: 24,
     fontWeight: "bold",
