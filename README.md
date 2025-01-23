@@ -31,5 +31,3 @@ npm install @react-navigation/stack
 npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
 
 ```
-
-

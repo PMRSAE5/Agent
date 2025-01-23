@@ -1,14 +1,85 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Research from "./Research";
+import ScannerQRCode from "./scannerQRCode";
+import FiltragePAX from "./FiltragePAX";
 
 export default function Home() {
+  const [activeComponent, setActiveComponent] = React.useState(null);
 
+  const renderActiveComponent = () => {
+    switch (activeComponent) {
+      case "Research":
+        return <Research />;
+      case "ScannerQRCode":
+        return <ScannerQRCode />;
+      case "FiltragePAX":
+        return <FiltragePAX />;
+      default:
+        return null;
+    }
+  };
+
+  // Si un composant est actif, afficher uniquement ce composant avec une icône pour revenir en arrière
+  if (activeComponent) {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => setActiveComponent(null)}
+        >
+          <Icon name="arrow-left" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <View style={styles.componentContainer}>{renderActiveComponent()}</View>
+      </View>
+    );
+  }
+
+  // Affichage initial avec les boutons centrés
   return (
     <View style={styles.container}>
-        <Text style={styles.welcomeText}>
-          Bon retour parmi nous !
-        </Text>
-        {/*<Text style={styles.errorText}>Utilisateur non trouvé.</Text>*/}
+      <View style={styles.centeredContent}>
+        {/* Logo Pmove Pro */}
+        <Image
+          source={require("../assets/PMoveLogoAvecStyle.png")}
+          style={styles.logo}
+        />
+        <Text style={styles.welcomeText}>Bon retour parmi nous !</Text>
+
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("Research")}
+          >
+            <Icon name="search" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>
+              Recherche de trajets pour gérer un PMR
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("ScannerQRCode")}
+          >
+            <Icon name="qrcode" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>
+              Scanner le QR Code PAX du PMR
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("FiltragePAX")}
+          >
+            <Icon
+              name="filter"
+              size={20}
+              color="#FFFFFF"
+              style={styles.icon}
+            />
+            <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
@@ -16,17 +87,61 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF6F1",
+    padding: 16,
+  },
+  centeredContent: {
+    flex: 1,
+    justifyContent: "center", // Centrer verticalement
+    alignItems: "center", // Centrer horizontalement
+  },
+  logo: {
+    width: 200, // Largeur de l'image
+    height: 200, // Hauteur de l'image
+    resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
+    marginBottom: 10, // Espacement sous l'image
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#EF4D20",
+    marginBottom: 32, // Espacement plus grand entre le texte et les boutons
+    textAlign: "center",
   },
-  //errorText: {
-    //fontSize: 20,
-    //color: "red",
-  //},
+  buttonsContainer: {
+    flexDirection: "column",
+  },
+  button: {
+    flexDirection: "row", // Affiche l'icône et le texte côte à côte
+    alignItems: "center",
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16, // Espacement vertical entre les boutons
+    width: 300, // Largeur des boutons
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+    flex: 1, // Pour centrer le texte dans le bouton
+  },
+  icon: {
+    marginRight: 10, // Espacement entre l'icône et le texte
+  },
+  componentContainer: {
+    flex: 1,
+    marginTop: 16,
+  },
+  backButton: {
+    position: "absolute",
+    bottom: 7, // Déplace le bouton vers le haut
+    left: 25, // Déplace le bouton vers la gauche
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 50,
+    elevation: 5,
+    zIndex: 9999,
+  },
 });

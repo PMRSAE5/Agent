@@ -16,40 +16,13 @@ export default function NavBar() {
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
 
-      {/* Research */}
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => navigation.navigate("Research")}
-      >
-        <Icon name="search" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>Rechercher</Text>
-      </TouchableOpacity>
-
-      {/* QR */}
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => navigation.navigate("QR")}
-      >
-        <Icon name="qrcode" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>QR</Text>
-      </TouchableOpacity>
-
       {/* Profile */}
       <TouchableOpacity
         style={styles.navButton}
         onPress={() => navigation.navigate("Profile")}
       >
         <Icon name="user" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>Profil</Text>
-      </TouchableOpacity>
-
-      {/* Logout */}
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => navigation.navigate("Login")}
-      >
-        <Icon name="sign-out" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>Déconnexion</Text>
+        <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
 
       {/* Settings */}
@@ -58,7 +31,7 @@ export default function NavBar() {
         onPress={() => navigation.navigate("Settings")}
       >
         <Icon name="cogs" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>Paramètres</Text>
+        <Text style={styles.navText}>Settings</Text>
       </TouchableOpacity>
     </View>
   );
@@ -69,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#EF4D20", // Couleur principale de l'application Agent
+    backgroundColor: "#EF4D20", // principal color of Agent application 
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderTopLeftRadius: 20,
