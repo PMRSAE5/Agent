@@ -11,13 +11,28 @@ import Profile from './components/Profile';
 import Settings from "./components/Settings";
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
+
 import scannerQRCode from './components/scannerQRCode';
 import FiltragePAX from './components/FiltragePAX';
 import FaceRecognition from './components/FaceRecognition';
+import StartAssistance from './components/StartAssistance';
+
+
 import { ThemeProvider, ThemeContext } from "./ThemeContext";
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
+function Tabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
+      <Tab.Screen name="QR" component={QRCodeScanner} options={{ headerShown: false }} /> Utilisez QRCodeScanner ici
+      <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+      <Tab.Screen name="FaceRecognition" component={FaceRecognition} options={{ headerShown: false }} />
+    </Tab.Navigator>
+  );
+}
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,44 +52,53 @@ export default function App() {
     <ThemeProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="SplashScreen">
-        {/* SplashScreen */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
           options={{ headerShown: false }}
         />
-
-        {/* Login */}
         <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
         />
-
-        {/* Home */}
         <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
 
-        {/* Profile */}
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ headerShown: false }}
-        />
+          {/* Research */}
+          <Stack.Screen
+            name="Research"
+            component={Research}
+            options={{ headerShown: false }}
+          />
 
-        {/* Settings */}
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
+          {/* QR */}
+          {/* <Stack.Screen
+            name="QR"
+            component={QR}
+            options={{ headerShown: false }}
+          /> */}
 
-      {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
-      {isLoggedIn && <NavBar />}
+          {/* Profile */}
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ headerShown: false }}
+          />
+
+          {/* Settings */}
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+
+        {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
+        {isLoggedIn && <NavBar />}
     </NavigationContainer>
     </ThemeProvider>
   );
