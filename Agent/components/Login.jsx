@@ -39,7 +39,7 @@ export default function Login({ navigation }) {
     // Vérifiez les valeurs avant d'envoyer la requête
     console.log("Nom d'utilisateur : ", name);
     console.log("Mot de passe : ", password);
-    console.log("Connecting to: http://192.168.1.96:3000");
+    console.log("Connecting to: http://172.20.10.11:3000");
 
     try {
     // Vérifiez si les champs sont remplis avant d'envoyer la requête
@@ -48,12 +48,12 @@ export default function Login({ navigation }) {
         return;
     }
 
-      const response = await axios.post('http://192.168.1.96:3000/ag/login', { name, password });
+      const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
 
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://192.168.1.96:3000/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
         console.log("Agent ID response:", agentIdResponse.data);
 

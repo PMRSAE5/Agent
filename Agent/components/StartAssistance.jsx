@@ -1,8 +1,18 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
+
 export default function StartAssistance({ navigation, route }) {
-  const { reservationId } = route.params; // Récupérer l'ID de la réservation
+  const reservationId = route?.params?.reservationId;
+  
+
+  if (!reservationId) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Erreur : Réservation introuvable</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -12,13 +22,14 @@ export default function StartAssistance({ navigation, route }) {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("QrCodeScanner", { reservationId })}
-      >
+        onPress={() => navigation.navigate("ScannerQRcode", { reservationId })}
+        >
         <Text style={styles.buttonText}>Vérification</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

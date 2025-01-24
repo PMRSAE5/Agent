@@ -11,8 +11,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Research({ navigation }) {
+export default function Research() {
+  const navigation = useNavigation()
+
   const [role, setRole] = useState(null); // Rôle de l'agent (RATP, SNCF, AirFrance)
   const [searchQuery, setSearchQuery] = useState(""); // Terme de recherche
   const [reservations, setReservations] = useState([]); // Liste des réservations
@@ -26,6 +29,8 @@ export default function Research({ navigation }) {
         `http://172.20.10.11:3000/reservation/getByPoint?pmr_point_id=${query}`
       );
       const data = await response.json();
+
+      console.log("Data fetched from API:", data);
   
       if (response.ok) {
         setReservations(data);
@@ -81,6 +86,7 @@ export default function Research({ navigation }) {
             text: "Commencer l'accompagnement",
             onPress: () => navigation.navigate("StartAssistance", { reservationId }),
           },
+          
         ]
       );
     } catch (error) {
@@ -88,6 +94,8 @@ export default function Research({ navigation }) {
       Alert.alert("Erreur", "Une erreur est survenue lors de la récupération des détails de la réservation.");
     }
   };
+
+  
   
   // Afficher les détails du trajet dans une modal
   const renderTrajetDetails = () => {

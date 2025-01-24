@@ -1,11 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
 import FiltragePAX from "./FiltragePAX";
 
-export default function Home() {
+export default function Home({ navigation }) {
   const [activeComponent, setActiveComponent] = React.useState(null);
 
   const renderActiveComponent = () => {
@@ -77,6 +77,14 @@ export default function Home() {
               style={styles.icon}
             />
             <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
+          </TouchableOpacity>
+          {/* Bouton pour accéder au formulaire d'assistance */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("AssistanceForm")}
+          >
+            <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>Remplir le formulaire d'assistance</Text>
           </TouchableOpacity>
         </View>
       </View>
