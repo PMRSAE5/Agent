@@ -8,17 +8,13 @@ import SplashScreen from "./components/SplashScreen";
 import Login from './components/Login';
 import Home from "./components/Home";
 import Profile from './components/Profile';
-import Settings from "./components/Settings";
+import Settings from './components/Settings';
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
-
 import scannerQRCode from './components/scannerQRCode';
 import FiltragePAX from './components/FiltragePAX';
 import FaceRecognition from './components/FaceRecognition';
-import StartAssistance from './components/StartAssistance';
-
-
-import { ThemeProvider, ThemeContext } from "./ThemeContext";
+import { ThemeProvider } from "./ThemeContext";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,7 +23,8 @@ function Tabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
-      <Tab.Screen name="QR" component={QRCodeScanner} options={{ headerShown: false }} /> Utilisez QRCodeScanner ici
+      <Tab.Screen name="QRCode" component={scannerQRCode} options={{ headerShown: false }} />
+      <Tab.Screen name="FiltragePAX" component={FiltragePAX} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
       <Tab.Screen name="FaceRecognition" component={FaceRecognition} options={{ headerShown: false }} />
     </Tab.Navigator>
@@ -48,39 +45,36 @@ export default function App() {
     checkUser();
   }, []);
 
+  // Fonction pour mettre à jour l'état de connexion
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
   return (
     <ThemeProvider>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
-        <Stack.Screen
-          name="SplashScreen"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SplashScreen">
+          {/* SplashScreen */}
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{ headerShown: false }}
+          />
+
+          {/* Login */}
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: false }}
+          >
+            {props => <Login {...props} onLoginSuccess={handleLoginSuccess} />}
+          </Stack.Screen>
+
+          {/* Home */}
+          <Stack.Screen
             name="Home"
             component={Home}
             options={{ headerShown: false }}
           />
-
-          {/* Research */}
-          <Stack.Screen
-            name="Research"
-            component={Research}
-            options={{ headerShown: false }}
-          />
-
-          {/* QR */}
-          {/* <Stack.Screen
-            name="QR"
-            component={QR}
-            options={{ headerShown: false }}
-          /> */}
 
           {/* Profile */}
           <Stack.Screen
@@ -99,7 +93,7 @@ export default function App() {
 
         {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
         {isLoggedIn && <NavBar />}
-    </NavigationContainer>
+      </NavigationContainer>
     </ThemeProvider>
   );
 }

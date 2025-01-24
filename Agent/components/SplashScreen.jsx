@@ -31,7 +31,7 @@ export default function SplashScreen() {
     // Simuler un temps de chargement, puis naviguer vers la page principale
     const timer = setTimeout(() => {
       navigation.replace("Login"); // Naviguez vers la page suivante
-    }, 5000); // 5 secondes
+    }, 4000); // 4 secondes
 
     return () => clearTimeout(timer);
   }, [rotateValue, fadeValue, navigation]);
