@@ -8,7 +8,7 @@ import SplashScreen from "./components/SplashScreen";
 import Login from './components/Login';
 import Home from "./components/Home";
 import Profile from './components/Profile';
-import Settings from "./components/Settings";
+import Settings from './components/Settings';
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
 import AssistanceForm from './components/AssistanceForm'; // Importez 
@@ -28,6 +28,8 @@ function Tabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
+      <Tab.Screen name="QRCode" component={scannerQRCode} options={{ headerShown: false }} />
+      <Tab.Screen name="FiltragePAX" component={FiltragePAX} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
       <Tab.Screen name="FaceRecognition" component={FaceRecognition} options={{ headerShown: false }} />
     </Tab.Navigator>
@@ -47,6 +49,11 @@ export default function App() {
     };
     checkUser();
   }, []);
+
+  // Fonction pour mettre à jour l'état de connexion
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
 
   return (
     <ThemeProvider>
@@ -103,6 +110,7 @@ export default function App() {
 
         </Stack.Navigator>
         {isLoggedIn && <NavBar />}
+      </NavigationContainer>
       </NavigationContainer>
     </ThemeProvider>
   );

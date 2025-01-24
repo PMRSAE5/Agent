@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, onLoginSuccess }) {
   const [name, setName] = useState(""); // Stocker le nom d'utilisateur
   const [password, setPassword] = useState(""); // Stocker le mot de passe
   const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
@@ -42,11 +42,11 @@ export default function Login({ navigation }) {
     console.log("Connecting to: http://172.20.10.11:3000");
 
     try {
-    // Vérifiez si les champs sont remplis avant d'envoyer la requête
-    if (!name || !password) {
+      // Vérifiez si les champs sont remplis avant d'envoyer la requête
+      if (!name || !password) {
         Alert.alert("Erreur", "Veuillez remplir tous les champs.");
         return;
-    }
+      }
 
       const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
@@ -61,11 +61,15 @@ export default function Login({ navigation }) {
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
         if (stayLoggedIn) {
-        // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
+          // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
           await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
         } else {
           await AsyncStorage.removeItem('user');
         }
+
+        // Appeler la fonction de rappel pour indiquer une connexion réussie
+        onLoginSuccess();
+
         navigation.replace("Home");
       }
     } catch (error) {
