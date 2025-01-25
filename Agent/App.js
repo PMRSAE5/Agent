@@ -55,11 +55,6 @@ export default function App() {
     checkUser();
   }, []);
 
-  // Fonction pour mettre à jour l'état de connexion
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-  };
-
   return (
     <ThemeProvider>
       <NavigationContainer>
@@ -161,8 +156,8 @@ export default function App() {
             component={Settings}
             options={{ headerShown: false }}
           />      
-
         </Stack.Navigator>
+        {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
         {isLoggedIn && <NavBar />}
       </NavigationContainer>
     </ThemeProvider>
