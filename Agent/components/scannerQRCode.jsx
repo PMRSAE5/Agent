@@ -75,7 +75,7 @@ export default function ScannerQRCode() {
   const handleConfirm = () => {
     setModalVisible(false);
     try {
-      navigation.navigate("scannerQRCodeBaggage", { qrData });
+      navigation.navigate("StartAssistance2", { qrData });
     } catch (error) {
       Alert.alert("Erreur", "L'écran 'scannerQRCodeBaggage' est introuvable.");
     }

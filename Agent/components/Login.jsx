@@ -96,10 +96,6 @@ export default function Login({ navigation, onLoginSuccess }) {
         } else {
           await AsyncStorage.removeItem('user');
         }
-
-        // Appeler la fonction de rappel pour indiquer une connexion réussie
-        onLoginSuccess();
-
         navigation.replace("Home");
       }
     } catch (error) {
