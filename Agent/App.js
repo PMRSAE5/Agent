@@ -12,9 +12,13 @@ import Settings from './components/Settings';
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
 import scannerQRCode from './components/scannerQRCode';
+import scannerQRCodeBaggage from './components/scannerQRCodeBaggage';
 import FiltragePAX from './components/FiltragePAX';
 import FaceRecognition from './components/FaceRecognition';
 import { ThemeProvider } from "./ThemeContext";
+import ScannerQRCodeBaggage from './components/scannerQRCodeBaggage';
+import ScannerQRCode from './components/scannerQRCode';
+import StartAssistance from './components/StartAssistance';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,7 +27,9 @@ function Tabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
+      <Tab.Screen name="StartAssistance" component={StartAssistance} options={{ headerShown: false }} />
       <Tab.Screen name="QRCode" component={scannerQRCode} options={{ headerShown: false }} />
+      <Tab.Screen name="QRCodeBaggage" component={ScannerQRCodeBaggage} options={{ headerShown: false }} />
       <Tab.Screen name="FiltragePAX" component={FiltragePAX} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
       <Tab.Screen name="FaceRecognition" component={FaceRecognition} options={{ headerShown: false }} />
@@ -73,6 +79,34 @@ export default function App() {
           <Stack.Screen
             name="Home"
             component={Home}
+            options={{ headerShown: false }}
+          />
+
+          {/* Research */}
+          <Stack.Screen
+            name="Research"
+            component={Research}
+            options={{ headerShown: false }}
+          />
+
+          {/* StartAssistance */}
+          <Stack.Screen
+            name="StartAssistance"
+            component={StartAssistance}
+            options={{ headerShown: false }}
+          />
+
+          {/* ScannerQRCode */}
+          <Stack.Screen
+            name="scannerQRCode"
+            component={ScannerQRCode}
+            options={{ headerShown: false }}
+          />
+
+          {/* ScannerQRCodeBaggage */}
+          <Stack.Screen
+            name="scannerQRCodeBaggage"
+            component={ScannerQRCodeBaggage}
             options={{ headerShown: false }}
           />
 

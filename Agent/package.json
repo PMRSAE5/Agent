@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/raleway": "^0.2.3",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-community/slider": "^4.5.5",
@@ -20,9 +21,11 @@
     "axios": "^1.7.9",
     "expo": "~52.0.17",
     "expo-barcode-scanner": "^13.0.1",
-    "expo-camera": "~16.0.13",
+    "expo-camera": "~16.0.14",
+    "expo-font": "~13.0.3",
     "expo-status-bar": "~2.0.0",
     "face-api.js": "^0.20.0",
+    "lottie-react-native": "7.1.0",
     "react": "18.3.1",
     "react-native": "0.76.3",
     "react-native-camera": "^4.2.1",

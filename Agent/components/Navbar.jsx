@@ -3,8 +3,34 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
+import {
+  useFonts,
+  Raleway_100Thin,
+  Raleway_200ExtraLight,
+  Raleway_300Light,
+  Raleway_400Regular,
+  Raleway_500Medium,
+  Raleway_600SemiBold,
+  Raleway_700Bold,
+  Raleway_800ExtraBold,
+  Raleway_900Black,
+} from "@expo-google-fonts/raleway";
+
 export default function NavBar() {
   const navigation = useNavigation();
+
+  // Charger la police Raleway PMove
+  const [fontsLoaded] = useFonts({
+    RalewayRegular: Raleway_400Regular,
+    RalewayBold: Raleway_700Bold,
+    RalewayExtraBold: Raleway_800ExtraBold,
+    RalewayBlack: Raleway_900Black,
+  });
+
+  if (!fontsLoaded) {
+    return null; // ou un indicateur de chargement
+  }
+
   return (
     <View style={styles.navbar}>
       {/* Home */}
@@ -54,9 +80,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navText: {
+    fontFamily: "RalewayRegular",
     marginTop: 5,
     color: "#FFFFFF",
     fontSize: 12,
-    fontWeight: "bold",
   },
 });
