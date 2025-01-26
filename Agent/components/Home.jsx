@@ -27,7 +27,7 @@ export default function Home() {
         return <Research />;
       case "ScannerQRCode":
         return <ScannerQRCode />;
-      case "AssistanceForm":
+        case "AssistanceForm":
         return <AssistanceForm />;
       default:
         return null;
@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
   },
   centeredContent: {
     flex: 1,
-    justifyContent: "center", // Centrer verticalement
-    alignItems: "center", // Centrer horizontalement
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 300, // Largeur de l'image
@@ -118,30 +118,30 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "RalewayBold",
     color: "#EF4D20",
-    marginBottom: 32, // Espacement plus grand entre le texte et les boutons
+    marginBottom: 32,
     textAlign: "center",
   },
   buttonsContainer: {
     flexDirection: "column",
   },
   button: {
-    flexDirection: "row", // Affiche l'icône et le texte côte à côte
+    flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#EF4D20",
     padding: 12,
     borderRadius: 8,
-    marginBottom: 16, // Espacement vertical entre les boutons
-    width: 300, // Largeur des boutons
+    marginBottom: 16,
+    width: 300,
   },
   buttonText: {
     color: "#FFFFFF",
     fontFamily: "RalewayExtraBold",
     fontSize: 16,
     textAlign: "center",
-    flex: 1, // Pour centrer le texte dans le bouton
+    flex: 1,
   },
   icon: {
-    marginRight: 10, // Espacement entre l'icône et le texte
+    marginRight: 10,
   },
   componentContainer: {
     flex: 1,
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    bottom: 7, // Déplace le bouton vers le haut
-    left: 25, // Déplace le bouton vers la gauche
+    bottom: 7,
+    left: 25,
     backgroundColor: "#EF4D20",
     padding: 12,
     borderRadius: 50,

@@ -27,6 +27,7 @@ function Tabs() {
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance" component={StartAssistance} options={{ headerShown: false }} />
       <Tab.Screen name="QRCode" component={ScannerQRCode} options={{ headerShown: false }} />
+      <Tab.Screen name="QRCodeBagage" component={ScannerQRCodeBagage} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance2" component={StartAssistance2} options={{ headerShown: false }} />
       <Tab.Screen name="QRCodeBagage" component={ScannerQRCodeBagage} options={{ headerShown: false }} />
       <Tab.Screen name="PhotoCapture" component={PhotoCapture} options={{ headerShown: false }} />

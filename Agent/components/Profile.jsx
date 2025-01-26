@@ -9,6 +9,7 @@ import {
   Switch,
   Modal,
 } from "react-native";
+import Slider from "@react-native-community/slider"; // Import Slider
 import FeatherIcon from "react-native-vector-icons/Feather";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,31 +21,42 @@ export default function Profile() {
     emailNotifications: true,
     pushNotifications: false,
   });
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [fontSize, setFontSize] = useState(16); // État pour la taille de police
   const [userInfo, setUserInfo] = useState({
     name: "",
     surname: "",
     agentId: "",
+    affiliation: "", // Nouvelle clé pour l'affiliation
   });
 
   const navigation = useNavigation();
 
-  // Charger les informations utilisateur après la connexion
+  // Charger les informations utilisateur et la taille de police
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
         const user = await AsyncStorage.getItem("user");
+        const storedFontSize = await AsyncStorage.getItem("fontSize");
         if (user) {
-          const { name, surname, agentId } = JSON.parse(user);
-          setUserInfo({ name, surname, agentId });
+          const { name, surname, agentId, affiliation } = JSON.parse(user);
+          setUserInfo({ name, surname, agentId, affiliation });
         }
+        if (storedFontSize) setFontSize(JSON.parse(storedFontSize));
       } catch (error) {
-        console.error("Erreur lors du chargement des informations utilisateur :", error);
+        console.error(
+          "Erreur lors du chargement des informations utilisateur ou de la taille de police :",
+          error
+        );
       }
     };
 
     loadUserInfo();
   }, []);
+
+  const handleFontSizeChange = async (value) => {
+    setFontSize(value);
+    await AsyncStorage.setItem("fontSize", JSON.stringify(value));
+  };
 
   const handleLogout = async () => {
     // Action de déconnexion
@@ -70,10 +82,30 @@ export default function Profile() {
           style={styles.animation}
         />
         <View>
-          <Text style={styles.profileName}>
+          <Text
+            style={[
+              styles.profileName,
+              { fontSize }, // Appliquer la taille de police personnalisée
+            ]}
+          >
             {userInfo.name} {userInfo.surname}
           </Text>
-          <Text style={styles.profileId}>Agent ID: {userInfo.agentId}</Text>
+          <Text
+            style={[
+              styles.profileId,
+              { fontSize: fontSize - 2 }, // Taille de police légèrement réduite pour l'ID
+            ]}
+          >
+            Agent ID: {userInfo.agentId}
+          </Text>
+          <Text
+            style={[
+              styles.profileAffiliation,
+              { fontSize: fontSize - 2 }, // Taille de police légèrement réduite pour l'affiliation
+            ]}
+          >
+            Affiliation: {userInfo.affiliation || "Non définie"}
+          </Text>
         </View>
       </View>
 
@@ -123,6 +155,26 @@ export default function Profile() {
               value={form.pushNotifications}
             />
           </View>
+
+          {/* Taille de la police */}
+          <View style={styles.row}>
+            <View style={[styles.rowIcon, { backgroundColor: "#F39C12" }]}>
+              <FeatherIcon color="#fff" name="text-height" size={20} />
+            </View>
+            <Text style={styles.rowLabel}>Taille de la police</Text>
+            <View style={styles.rowSpacer} />
+            <Slider
+              style={{ width: 150 }}
+              minimumValue={12}
+              maximumValue={24}
+              step={1}
+              value={fontSize}
+              onValueChange={handleFontSizeChange}
+              minimumTrackTintColor="#F39C12"
+              thumbTintColor="#F39C12"
+            />
+            <Text style={{ fontSize: 14, marginLeft: 8 }}>{fontSize}px</Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -150,6 +202,7 @@ const styles = StyleSheet.create({
   animation: {
     width: 100,
     height: 100,
+    resizeMode: "contain",
   },
   profileName: {
     marginTop: 20,
@@ -163,6 +216,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#989898",
     textAlign: "center",
+  },
+  profileAffiliation: {
+    marginTop: 5,
+    fontSize: 16,
+    color: "#505050",
+    textAlign: "center",
+    fontStyle: "italic",
   },
   section: {
     paddingHorizontal: 24,
