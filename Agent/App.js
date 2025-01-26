@@ -10,12 +10,14 @@ import Profile from './components/Profile';
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
 import AssistanceForm from './components/AssistanceForm';
-import ScannerQRCode from './components/ScannerQRCode';
+import ScannerQRCode from './components/scannerQRCode';
 import ScannerQRCodeBagage from './components/ScannerQRCodeBagage';
 import StartAssistance from './components/StartAssistance';
 import StartAssistance2 from './components/StartAssistance2';
 import StartAssistance3 from './components/StartAssistance3';
 import StartAssistance4 from './components/StartAssistance4';
+
+import TripInProgress from './components/TripInProgress';
 import PhotoCapture from './components/PhotoCapture';
 import { ThemeProvider, ThemeContext } from "./ThemeContext";
 
@@ -111,6 +113,13 @@ export default function App() {
           <Stack.Screen
             name="StartAssistance4"
             component={StartAssistance4}
+            options={{ headerShown: false }}
+          />
+
+          {/* TripInProgress */}
+          <Stack.Screen
+            name="TripInProgress"
+            component={TripInProgress}
             options={{ headerShown: false }}
           />
 
