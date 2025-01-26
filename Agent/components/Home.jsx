@@ -2,11 +2,46 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
-import ScannerQRCode from "./scannerQRCode";
-import FiltragePAX from "./FiltragePAX";
+import ScannerQRCode from "./ScannerQRCode";
+import AssistanceForm from "./AssistanceForm";
+
+import {
+  useFonts,
+  Raleway_100Thin,
+  Raleway_200ExtraLight,
+  Raleway_300Light,
+  Raleway_400Regular,
+  Raleway_500Medium,
+  Raleway_600SemiBold,
+  Raleway_700Bold,
+  Raleway_800ExtraBold,
+  Raleway_900Black,
+} from "@expo-google-fonts/raleway";
 
 export default function Home({ navigation }) {
   const [activeComponent, setActiveComponent] = React.useState(null);
+
+  // Charger la police Raleway PMove
+  const [fontsLoaded] = useFonts({
+    Raleway_100Thin,
+    Raleway_200ExtraLight,
+    Raleway_300Light,
+    RalewayRegular: Raleway_400Regular,
+    Raleway_500Medium,
+    Raleway_600SemiBold,
+    RalewayBold: Raleway_700Bold,
+    RalewayExtraBold: Raleway_800ExtraBold,
+    RalewayBlack: Raleway_900Black,
+  });
+
+  // Si les polices ne sont pas encore chargées, afficher un écran de chargement
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.container}>
+        <Text>Chargement des polices...</Text>
+      </View>
+    );
+  }
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -14,8 +49,8 @@ export default function Home({ navigation }) {
         return <Research />;
       case "ScannerQRCode":
         return <ScannerQRCode />;
-      case "FiltragePAX":
-        return <FiltragePAX />;
+      case "AssistanceForm":
+        return <AssistanceForm />;
       default:
         return null;
     }
@@ -48,6 +83,7 @@ export default function Home({ navigation }) {
         <Text style={styles.welcomeText}>Bon retour parmi nous !</Text>
 
         <View style={styles.buttonsContainer}>
+          {/* Bouton pour accéder à la recherche de trajets */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => setActiveComponent("Research")}
@@ -57,6 +93,7 @@ export default function Home({ navigation }) {
               Recherche de trajets pour gérer un PMR
             </Text>
           </TouchableOpacity>
+          {/* Bouton pour accéder au scanner de QR Code */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => setActiveComponent("ScannerQRCode")}
@@ -65,18 +102,6 @@ export default function Home({ navigation }) {
             <Text style={styles.buttonText}>
               Scanner le QR Code PAX du PMR
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("FiltragePAX")}
-          >
-            <Icon
-              name="filter"
-              size={20}
-              color="#FFFFFF"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
           </TouchableOpacity>
           {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
@@ -92,6 +117,7 @@ export default function Home({ navigation }) {
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,14 +130,14 @@ const styles = StyleSheet.create({
     alignItems: "center", // Centrer horizontalement
   },
   logo: {
-    width: 200, // Largeur de l'image
-    height: 200, // Hauteur de l'image
+    width: 300, // Largeur de l'image
+    height: 300, // Hauteur de l'image
     resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
     marginBottom: 10, // Espacement sous l'image
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "RalewayBold",
     color: "#EF4D20",
     marginBottom: 32, // Espacement plus grand entre le texte et les boutons
     textAlign: "center",
@@ -130,7 +156,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFFFFF",
-    fontWeight: "bold",
+    fontFamily: "RalewayExtraBold",
     fontSize: 16,
     textAlign: "center",
     flex: 1, // Pour centrer le texte dans le bouton

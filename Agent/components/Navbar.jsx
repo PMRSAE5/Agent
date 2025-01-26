@@ -50,15 +50,6 @@ export default function NavBar() {
         <Icon name="user" size={24} color="#FFFFFF" />
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
-
-      {/* Settings */}
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => navigation.navigate("Settings")}
-      >
-        <Icon name="cogs" size={24} color="#FFFFFF" />
-        <Text style={styles.navText}>Settings</Text>
-      </TouchableOpacity>
     </View>
   );
 }

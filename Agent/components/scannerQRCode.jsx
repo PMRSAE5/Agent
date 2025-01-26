@@ -77,7 +77,7 @@ export default function ScannerQRCode() {
     try {
       navigation.navigate("StartAssistance2", { qrData });
     } catch (error) {
-      Alert.alert("Erreur", "L'écran 'scannerQRCodeBaggage' est introuvable.");
+      Alert.alert("Erreur", "L'écran 'StartAssistance2' est introuvable.");
     }
   };
 
