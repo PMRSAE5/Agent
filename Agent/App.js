@@ -45,7 +45,7 @@ export default function App() {
     const checkUser = async () => {
       const user = await AsyncStorage.getItem("user");
       if (user) {
-        setIsLoggedIn(true);
+        setIsLoggedIn(!!user);
       }
     };
     checkUser();

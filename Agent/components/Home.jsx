@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./ScannerQRCode";
@@ -32,6 +32,25 @@ export default function Home() {
       default:
         return null;
     }
+  };
+
+  const handleAlert = (message, component) => {
+    Alert.alert(
+      "Recommandation",
+      message,
+      [
+        {
+          text: "Annuler",
+          onPress: () => setActiveComponent(component),
+          style: "default",
+        },
+        {
+          text: "Continuer",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   // Si un composant est actif, afficher uniquement ce composant avec une icône pour revenir en arrière
@@ -74,7 +93,8 @@ export default function Home() {
           {/* Bouton pour accéder au scanner de QR Code */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("ScannerQRCode")}
+            onPress={() => handleAlert(
+              "Il est recommandé de rechercher le trajet associé au PMR avant de scanner le QR Code du PMR.", setActiveComponent("ScannerQRCode"))}
           >
             <Icon name="qrcode" size={20} color="#FFFFFF" style={styles.icon} />
             <Text style={styles.buttonText}>
@@ -84,7 +104,8 @@ export default function Home() {
           {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("AssistanceForm")}
+            onPress={() => handleAlert(
+              "Il est recommandé de rechercher le trajet associé au PMR avant de remplir son formulaire d'assistance.", setActiveComponent("AssistanceForm"))}
           >
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
             <Text style={styles.buttonText}>Remplir le formulaire d'assistance
