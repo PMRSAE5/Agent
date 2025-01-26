@@ -3,10 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-na
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
-import AssistanceForm from "./AssistanceForm";
 import Profile from "./Profile";
 import { useNavigation } from '@react-navigation/native';
-
 
 import {
   useFonts,
@@ -23,6 +21,7 @@ import {
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = React.useState(null);
+  const navigation = useNavigation(); // Hook de navigation
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -30,8 +29,6 @@ export default function Home() {
         return <Research />;
       case "scannerQRCode":
         return <ScannerQRCode />;
-        case "AssistanceForm":
-        return <AssistanceForm />;
       default:
         return null;
     }
@@ -104,15 +101,13 @@ export default function Home() {
               Scanner le QR Code PAX du PMR
             </Text>
           </TouchableOpacity>
-          {/* Bouton pour accéder au formulaire d'assistance */}
+          {/* Bouton pour accéder au profil */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handleAlert(
-              "Il est recommandé de rechercher le trajet associé au PMR avant de remplir son formulaire d'assistance.", setActiveComponent("AssistanceForm"))}
+            onPress={() => navigation.navigate("Profile")} // Redirection vers la page Profile
           >
-            <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Remplir le formulaire d'assistance
-            </Text>
+            <Icon name="user" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>Accéder à mon profil</Text>
           </TouchableOpacity>
         </View>
       </View>

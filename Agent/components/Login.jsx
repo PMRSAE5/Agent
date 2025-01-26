@@ -18,9 +18,10 @@ import {
 } from "@expo-google-fonts/raleway";
 
 export default function Login({ navigation, onLoginSuccess }) {
-  const [name, setName] = useState(""); // Stocker le nom d'utilisateur
-  const [password, setPassword] = useState(""); // Stocker le mot de passe
-  const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const [loginError, setLoginError] = useState(null);
 
   const [fontsLoaded] = useFonts({
     RalewayThin: Raleway_100Thin,
@@ -35,64 +36,54 @@ export default function Login({ navigation, onLoginSuccess }) {
   });
 
   useEffect(() => {
-    // Charger les infos de l'utilisateur depuis AsyncStorage
     const loadUserData = async () => {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
-          const { name, password, agentId, affiliation } = JSON.parse(userData); // Inclure affiliation
-          setName(name); // Pré remplir le nom
-          setPassword(password); // Pré remplir le mot de passe
-          setStayLoggedIn(true); // Cocher "rester connecté"
+          const { name, password, agentId, affiliation } = JSON.parse(userData);
+          setName(name);
+          setPassword(password);
+          setStayLoggedIn(true);
           console.log("Nom :", name, "Mot de passe :", password, "Affiliation :", affiliation);
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
             const { agentId } = JSON.parse(agentIdData);
-            console.log("Loaded agentId:", agentId); // Afficher l'ID de l'agent dans les logs
+            console.log("Loaded agentId:", agentId);
           }
         }
       } catch (error) {
         console.error("Erreur lors du chargement des données utilisateur :", error);
       }
     };
-  
+
     loadUserData();
   }, []);
-  
 
   if (!fontsLoaded) {
-    return null; // ou un indicateur de chargement
+    return null;
   }
 
-  // Fonction pour gérer la connexion
   const handleLogin = async () => {
-    // Vérifiez les valeurs avant d'envoyer la requête
-    console.log("Nom d'utilisateur : ", name);
-    console.log("Mot de passe : ", password);
-    console.log("Connecting to: http://172.20.10.11:3000");
+    setLoginError(null);
+
+    if (!name || !password) {
+      setLoginError("Veuillez remplir tous les champs.");
+      return;
+    }
 
     try {
-      // Vérifiez si les champs sont remplis avant d'envoyer la requête
-      if (!name || !password) {
-        Alert.alert("Erreur", "Veuillez remplir tous les champs.");
-        return;
-      }
-
       const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
 
       if (response.status === 200) {
-        // Récupérer l'ID de l'agent
         const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
-        const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
+        const agentId = agentIdResponse.data[0].ID_Agent;
         console.log("Agent ID response:", agentIdResponse.data);
 
-        // Toujours enregistrer l'ID de l'agent
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
         if (stayLoggedIn) {
-          // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
           await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
         } else {
           await AsyncStorage.removeItem('user');
@@ -101,7 +92,7 @@ export default function Login({ navigation, onLoginSuccess }) {
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
-      Alert.alert("Erreur du login", "Nom ou mot de passe invalide.");
+      setLoginError("Identifiants incorrects. Vérifiez vos informations.");
     }
   };
 
@@ -109,12 +100,11 @@ export default function Login({ navigation, onLoginSuccess }) {
     Alert.alert(
       "Mot de passe oublié ?",
       "Veuillez vous diriger vers PMove Support pour récupérer votre mot de passe lié à votre ID Agent."
-    ); // Pop-up adaptatif
+    );
   };
 
   return (
     <View style={styles.container}>
-      {/* Logo au-dessus du formulaire */}
       <Image
         source={require("../assets/PMoveLogoSANSTITRE.png")}
         style={styles.logo}
@@ -128,27 +118,40 @@ export default function Login({ navigation, onLoginSuccess }) {
           style={styles.input}
           placeholder="Nom d'utilisateur"
           value={name}
-          onChangeText={setName}
+          onChangeText={(text) => {
+            setName(text);
+            setLoginError(null);
+          }}
           autoCapitalize="none"
         />
         <TextInput
           style={styles.input}
           placeholder="Mot de passe"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setLoginError(null);
+          }}
           secureTextEntry
         />
 
+        {loginError && (
+          <View style={styles.errorContainer}>
+            <Icon name="exclamation-circle" size={16} color="#EF4D20" />
+            <Text style={styles.errorText}>{loginError}</Text>
+          </View>
+        )}
+
         <View style={styles.checkboxSection}>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
-            <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
-          </TouchableOpacity>
-          <Text style={styles.label}>Rester connecté</Text>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
+              <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
+            </TouchableOpacity>
+            <Text style={styles.label}>Rester connecté</Text>
+          </View>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
           </TouchableOpacity>
-        </View>
         </View>
 
         <TouchableOpacity
@@ -165,20 +168,20 @@ export default function Login({ navigation, onLoginSuccess }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF6F1", // Fond de la page
+    backgroundColor: "#FFF6F1",
     padding: 20,
-    justifyContent: "center", // Centrer verticalement
-    alignItems: "center", // Centrer horizontalement
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
-    width: 200, // Taille de l'image
-    height: 200, // Taille de l'image
-    marginBottom: 10, // Espace sous l'image
+    width: 200,
+    height: 200,
+    marginBottom: 10,
   },
   title: {
     fontSize: 27,
     fontFamily: "RalewayBold",
-    color: "#EF4D20", // Couleur du titre
+    color: "#EF4D20",
     marginBottom: 10,
     textAlign: "center",
   },
@@ -196,17 +199,17 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 50,
-    borderColor: "#EF4D20", // Bordure des champs
+    borderColor: "#EF4D20",
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 15,
     backgroundColor: "#FFFFFF",
     fontSize: 16,
-    color: "#000", // Texte des champs
+    color: "#000",
     borderRadius: 8,
   },
   checkboxSection: {
-    flexDirection: "row", // Alignement horizontal
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
@@ -226,26 +229,33 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     fontSize: 14,
-    color: "#EF4D20", // Couleur du texte
+    color: "#EF4D20",
     textDecorationLine: "underline",
-    marginLeft: 15,
-    marginBottom: 0,
   },
   buttonPrimary: {
-    backgroundColor: "#EF4D20", // Couleur du bouton
+    backgroundColor: "#EF4D20",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 20,
   },
   buttonTextPrimary: {
-    color: "#FFFFFF", // Couleur du texte du bouton
+    color: "#FFFFFF",
     fontFamily: "RalewayBold",
     fontSize: 16,
   },
-  error: {
-    color: "#EF4D20",
-    textAlign: "center",
-    marginBottom: 16,
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEE8E1',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  errorText: {
+    color: '#EF4D20',
+    marginLeft: 8,
+    fontFamily: 'RalewayMedium',
+    fontSize: 14,
   },
 });
