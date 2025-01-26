@@ -40,11 +40,11 @@ export default function Login({ navigation, onLoginSuccess }) {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
-          const { name, password, agentId } = JSON.parse(userData);
+          const { name, password, agentId, affiliation } = JSON.parse(userData); // Inclure affiliation
           setName(name); // Pré remplir le nom
           setPassword(password); // Pré remplir le mot de passe
           setStayLoggedIn(true); // Cocher "rester connecté"
-          console.log(name, password);
+          console.log("Nom :", name, "Mot de passe :", password, "Affiliation :", affiliation);
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
@@ -56,9 +56,10 @@ export default function Login({ navigation, onLoginSuccess }) {
         console.error("Erreur lors du chargement des données utilisateur :", error);
       }
     };
-
+  
     loadUserData();
   }, []);
+  
 
   if (!fontsLoaded) {
     return null; // ou un indicateur de chargement
@@ -69,7 +70,7 @@ export default function Login({ navigation, onLoginSuccess }) {
     // Vérifiez les valeurs avant d'envoyer la requête
     console.log("Nom d'utilisateur : ", name);
     console.log("Mot de passe : ", password);
-    console.log("Connecting to: http://172.20.10.5:3000");
+    console.log("Connecting to: http://172.20.10.11:3000");
 
     try {
       // Vérifiez si les champs sont remplis avant d'envoyer la requête
@@ -78,12 +79,12 @@ export default function Login({ navigation, onLoginSuccess }) {
         return;
       }
 
-      const response = await axios.post('http://172.20.10.5:3000/ag/login', { name, password });
+      const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
 
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://172.20.10.5:3000/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
         console.log("Agent ID response:", agentIdResponse.data);
 
