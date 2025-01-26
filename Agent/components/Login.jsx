@@ -170,9 +170,9 @@ const styles = StyleSheet.create({
     alignItems: "center", // Centrer horizontalement
   },
   logo: {
-    width: 200, // Taille de l'image
-    height: 200, // Taille de l'image
-    marginBottom: 10, // Espace sous l'image
+    width: 500, // Taille de l'image
+    height: 300, // Taille de l'image
+    marginBottom: -70, // Marge en bas
   },
   title: {
     fontSize: 27,

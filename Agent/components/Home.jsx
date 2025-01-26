@@ -34,6 +34,18 @@ export default function Home() {
     }
   };
 
+  const [fontsLoaded] = useFonts({
+    Raleway_100Thin,
+    Raleway_200ExtraLight,
+    Raleway_300Light,
+    RalewayRegular: Raleway_400Regular,
+    Raleway_500Medium,
+    Raleway_600SemiBold,
+    RalewayBold: Raleway_700Bold,
+    RalewayExtraBold: Raleway_800ExtraBold,
+    RalewayBlack: Raleway_900Black,
+  });
+
   const handleAlert = (message, component) => {
     Alert.alert(
       "Recommandation",
@@ -133,7 +145,7 @@ const styles = StyleSheet.create({
     width: 300, // Largeur de l'image
     height: 300, // Hauteur de l'image
     resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
-    marginBottom: 10, // Espacement sous l'image
+    marginBottom: -30, // Espacement sous l'image
   },
   welcomeText: {
     fontSize: 24,

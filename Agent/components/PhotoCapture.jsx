@@ -42,7 +42,7 @@ const PhotoCapture = () => {
 
   // Naviguer vers AssistanceForm
   const goToAssistanceForm = () => {
-    navigation.navigate('AssistanceForm');
+    navigation.navigate('StartAssistance4');
   };
 
   return (

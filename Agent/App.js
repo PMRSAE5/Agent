@@ -15,27 +15,12 @@ import ScannerQRCode from './components/ScannerQRCode';
 import ScannerQRCodeBagage from './components/ScannerQRCodeBagage';
 import StartAssistance from './components/StartAssistance';
 import StartAssistance2 from './components/StartAssistance2';
+import StartAssistance3 from './components/StartAssistance3';
+import StartAssistance4 from './components/StartAssistance4';
 import PhotoCapture from './components/PhotoCapture';
 import { ThemeProvider, ThemeContext } from "./ThemeContext";
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
-function Tabs() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
-      <Tab.Screen name="StartAssistance" component={StartAssistance} options={{ headerShown: false }} />
-      <Tab.Screen name="QRCode" component={ScannerQRCode} options={{ headerShown: false }} />
-      <Tab.Screen name="QRCodeBagage" component={ScannerQRCodeBagage} options={{ headerShown: false }} />
-      <Tab.Screen name="StartAssistance2" component={StartAssistance2} options={{ headerShown: false }} />
-      <Tab.Screen name="QRCodeBagage" component={ScannerQRCodeBagage} options={{ headerShown: false }} />
-      <Tab.Screen name="PhotoCapture" component={PhotoCapture} options={{ headerShown: false }} />
-      <Tab.Screen name="AssistanceForm" component={AssistanceForm} options={{ headerShown: false }} />
-      <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-    </Tab.Navigator>
-  );
-}
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -71,12 +56,6 @@ export default function App() {
           <Stack.Screen
             name="Home"
             component={Home}
-            options={{ headerShown: false }}
-          />
-          {/* Tabs */}
-          <Stack.Screen
-            name="Tabs"
-            component={Tabs}
             options={{ headerShown: false }}
           />
 
@@ -115,10 +94,24 @@ export default function App() {
             options={{ headerShown: false }}
           />
 
+          {/* StartAssistance3 */}
+          <Stack.Screen
+            name="StartAssistance3"
+            component={StartAssistance3}
+            options={{ headerShown: false }}
+          />
+
           {/* PhotoCapture */}
           <Stack.Screen
             name="PhotoCapture"
             component={PhotoCapture}
+            options={{ headerShown: false }}
+          />
+
+          {/* StartAssistance4 */}
+          <Stack.Screen
+            name="StartAssistance4"
+            component={StartAssistance4}
             options={{ headerShown: false }}
           />
 
