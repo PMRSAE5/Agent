@@ -81,34 +81,15 @@ export default function Home() {
               Scanner le QR Code PAX du PMR
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("FiltragePAX")}
-          >
-            <Icon
-              name="filter"
-              size={20}
-              color="#FFFFFF"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
-          </TouchableOpacity>
           {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("AssistanceForm")}
+            onPress={() => setActiveComponent("AssistanceForm")}
           >
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Remplir le formulaire d'assistance</Text>
+            <Text style={styles.buttonText}>Remplir le formulaire d'assistance
+            </Text>
           </TouchableOpacity>
-          {/* Bouton pour tester la page PhotoCapture */}
-          <TouchableOpacity
-  style={styles.button}
-  onPress={() => navigation.navigate("PhotoCapture")}
->
-  <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
-  <Text style={styles.buttonText}>Tester la capture de photo</Text>
-</TouchableOpacity>
         </View>
       </View>
     </View>
