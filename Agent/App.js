@@ -111,7 +111,6 @@ export default function App() {
         </Stack.Navigator>
         {isLoggedIn && <NavBar />}
       </NavigationContainer>
-      </NavigationContainer>
     </ThemeProvider>
   );
 }

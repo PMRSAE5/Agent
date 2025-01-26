@@ -1,12 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
 import FiltragePAX from "./FiltragePAX";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Home({ navigation }) {
+export default function Home() {
   const [activeComponent, setActiveComponent] = React.useState(null);
+  const navigation = useNavigation()
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -78,7 +80,6 @@ export default function Home({ navigation }) {
             />
             <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
           </TouchableOpacity>
-          {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("AssistanceForm")}
@@ -86,6 +87,14 @@ export default function Home({ navigation }) {
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
             <Text style={styles.buttonText}>Remplir le formulaire d'assistance</Text>
           </TouchableOpacity>
+          {/* Bouton pour tester la page PhotoCapture */}
+          <TouchableOpacity
+  style={styles.button}
+  onPress={() => navigation.navigate("PhotoCapture")}
+>
+  <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
+  <Text style={styles.buttonText}>Tester la capture de photo</Text>
+</TouchableOpacity>
         </View>
       </View>
     </View>
