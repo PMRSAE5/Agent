@@ -79,7 +79,7 @@ const ScannerQRCodeBagage = () => {
       const handleConfirm = () => {
         setModalVisible(false);
         try {
-          navigation.navigate("AssistanceForm", { qrDataBagage });
+          navigation.navigate("PhotoCapture", { qrDataBagage });
         } catch (error) {
           Alert.alert("Erreur", "Impossible de naviguer vers la page de formulaire du PMR.");
         }

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
@@ -23,7 +23,6 @@ import {
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = React.useState(null);
-  const navigation = useNavigation();
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -31,13 +30,30 @@ export default function Home() {
         return <Research />;
       case "scannerQRCode":
         return <ScannerQRCode />;
-      case "Profile": // Remplacement ici également
-        return <Profile />;
         case "AssistanceForm":
         return <AssistanceForm />;
       default:
         return null;
     }
+  };
+
+  const handleAlert = (message, component) => {
+    Alert.alert(
+      "Recommandation",
+      message,
+      [
+        {
+          text: "Annuler",
+          onPress: () => setActiveComponent(component),
+          style: "default",
+        },
+        {
+          text: "Continuer",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   // Si un composant est actif, afficher uniquement ce composant avec une icône pour revenir en arrière
@@ -80,39 +96,23 @@ export default function Home() {
           {/* Bouton pour accéder au scanner de QR Code */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("ScannerQRCode")}
+            onPress={() => handleAlert(
+              "Il est recommandé de rechercher le trajet associé au PMR avant de scanner le QR Code du PMR.", setActiveComponent("ScannerQRCode"))}
           >
             <Icon name="qrcode" size={20} color="#FFFFFF" style={styles.icon} />
             <Text style={styles.buttonText}>
               Scanner le QR Code PAX du PMR
             </Text>
           </TouchableOpacity>
-
-          {/* Bouton pour ouvrir la page Profile à la place de FiltragePAX */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Profile")}
-          >
-            <Icon name="user" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Profil du PMR</Text>
-          </TouchableOpacity>
           {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("AssistanceForm")}
+            onPress={() => handleAlert(
+              "Il est recommandé de rechercher le trajet associé au PMR avant de remplir son formulaire d'assistance.", setActiveComponent("AssistanceForm"))}
           >
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>
-              Remplir le formulaire d'assistance
+            <Text style={styles.buttonText}>Remplir le formulaire d'assistance
             </Text>
-          </TouchableOpacity>
-          {/* Bouton pour tester la page PhotoCapture */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("PhotoCapture")}
-          >
-            <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Tester la capture de photo</Text>
           </TouchableOpacity>
         </View>
       </View>

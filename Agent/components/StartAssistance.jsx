@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function StartAssistance({ navigation, route }) {
   const reservationId = route?.params?.reservationId;
-  // const navigation = useNavigation();
 
 
   if (!reservationId) {
