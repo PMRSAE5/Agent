@@ -45,7 +45,7 @@ const PhotoCapture = () => {
 
   const toggleVerification = () => setIsVerified(!isVerified);
 
-  const goToNext = () => navigation.navigate('AssistanceForm');
+  const goToNext = () => navigation.navigate('StartAssistance4');
 
   return (
     <View style={styles.container}>

@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
 import Profile from "./Profile";
+import AssistanceForm from "./AssistanceForm";
 import { useNavigation } from '@react-navigation/native';
 
 import {
@@ -27,12 +28,24 @@ export default function Home() {
     switch (activeComponent) {
       case "Research":
         return <Research />;
-      case "scannerQRCode":
+      case "ScannerQRCode":
         return <ScannerQRCode />;
       default:
         return null;
     }
   };
+
+  const [fontsLoaded] = useFonts({
+    Raleway_100Thin,
+    Raleway_200ExtraLight,
+    Raleway_300Light,
+    RalewayRegular: Raleway_400Regular,
+    Raleway_500Medium,
+    Raleway_600SemiBold,
+    RalewayBold: Raleway_700Bold,
+    RalewayExtraBold: Raleway_800ExtraBold,
+    RalewayBlack: Raleway_900Black,
+  });
 
   const handleAlert = (message, component) => {
     Alert.alert(
@@ -131,7 +144,7 @@ const styles = StyleSheet.create({
     width: 300, // Largeur de l'image
     height: 300, // Hauteur de l'image
     resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
-    marginBottom: 10, // Espacement sous l'image
+    marginBottom: -30, // Espacement sous l'image
   },
   welcomeText: {
     fontSize: 24,

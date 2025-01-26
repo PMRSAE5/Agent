@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Agent",
+    "name": "PMove Pro",
     "slug": "Agent",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Cette application nécessite l'accès à la caméra pour scanner les QR codes."
+        "NSCameraUsageDescription": "Cette application nécessite l'accès à la caméra pour scanner les QR codes.",
+        "NSPhotoLibraryAddUsageDescription": "Nous avons besoin de votre permission pour enregistrer des photos."
       }
     },
     "android": {
@@ -30,8 +31,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": ["expo-font"]
   }
 }
