@@ -3,12 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./scannerQRCode";
-import FiltragePAX from "./FiltragePAX";
+import Profile from "./Profile"; // Remplacement de FiltragePAX par Profile
 import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = React.useState(null);
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -16,8 +16,8 @@ export default function Home() {
         return <Research />;
       case "ScannerQRCode":
         return <ScannerQRCode />;
-      case "FiltragePAX":
-        return <FiltragePAX />;
+      case "Profile": // Remplacement ici également
+        return <Profile />;
       default:
         return null;
     }
@@ -68,33 +68,32 @@ export default function Home() {
               Scanner le QR Code PAX du PMR
             </Text>
           </TouchableOpacity>
+
+          {/* Bouton pour ouvrir la page Profile à la place de FiltragePAX */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("FiltragePAX")}
+            onPress={() => setActiveComponent("Profile")}
           >
-            <Icon
-              name="filter"
-              size={20}
-              color="#FFFFFF"
-              style={styles.icon}
-            />
-            <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
+            <Icon name="user" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>Profil du PMR</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("AssistanceForm")}
           >
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Remplir le formulaire d'assistance</Text>
+            <Text style={styles.buttonText}>
+              Remplir le formulaire d'assistance
+            </Text>
           </TouchableOpacity>
           {/* Bouton pour tester la page PhotoCapture */}
           <TouchableOpacity
-  style={styles.button}
-  onPress={() => navigation.navigate("PhotoCapture")}
->
-  <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
-  <Text style={styles.buttonText}>Tester la capture de photo</Text>
-</TouchableOpacity>
+            style={styles.button}
+            onPress={() => navigation.navigate("PhotoCapture")}
+          >
+            <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>Tester la capture de photo</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -109,43 +108,43 @@ const styles = StyleSheet.create({
   },
   centeredContent: {
     flex: 1,
-    justifyContent: "center", // Centrer verticalement
-    alignItems: "center", // Centrer horizontalement
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
-    width: 200, // Largeur de l'image
-    height: 200, // Hauteur de l'image
-    resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
-    marginBottom: 10, // Espacement sous l'image
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
+    marginBottom: 10,
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 32, // Espacement plus grand entre le texte et les boutons
+    marginBottom: 32,
     textAlign: "center",
   },
   buttonsContainer: {
     flexDirection: "column",
   },
   button: {
-    flexDirection: "row", // Affiche l'icône et le texte côte à côte
+    flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#EF4D20",
     padding: 12,
     borderRadius: 8,
-    marginBottom: 16, // Espacement vertical entre les boutons
-    width: 300, // Largeur des boutons
+    marginBottom: 16,
+    width: 300,
   },
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
-    flex: 1, // Pour centrer le texte dans le bouton
+    flex: 1,
   },
   icon: {
-    marginRight: 10, // Espacement entre l'icône et le texte
+    marginRight: 10,
   },
   componentContainer: {
     flex: 1,
@@ -153,8 +152,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    bottom: 7, // Déplace le bouton vers le haut
-    left: 25, // Déplace le bouton vers la gauche
+    bottom: 7,
+    left: 25,
     backgroundColor: "#EF4D20",
     padding: 12,
     borderRadius: 50,

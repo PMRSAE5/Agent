@@ -29,7 +29,7 @@ function Tabs() {
     <Tab.Navigator>
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance" component={StartAssistance} options={{ headerShown: false }} />
-      <Tab.Screen name="QRCode" component={scannerQRCode} options={{ headerShown: false }} />
+      <Tab.Screen name="QRCode" component={ScannerQRCode} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance2" component={StartAssistance2} options={{ headerShown: false }} />
       <Tab.Screen name="QRCodeBaggage" component={ScannerQRCodeBaggage} options={{ headerShown: false }} />
       <Tab.Screen name="FiltragePAX" component={FiltragePAX} options={{ headerShown: false }} />
@@ -110,7 +110,7 @@ export default function App() {
 
           {/* ScannerQRCodeBaggage */}
           <Stack.Screen
-            name="scannerQRCodeBaggage"
+            name="ScannerQRCodeBaggage"
             component={ScannerQRCodeBaggage}
             options={{ headerShown: false }}
           />

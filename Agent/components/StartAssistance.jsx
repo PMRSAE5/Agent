@@ -1,10 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function StartAssistance({ navigation, route }) {
   const reservationId = route?.params?.reservationId;
-  
+  // const navigation = useNavigation();
+
 
   if (!reservationId) {
     return (
@@ -22,7 +24,7 @@ export default function StartAssistance({ navigation, route }) {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("ScannerQRcode", { reservationId })}
+        onPress={() => navigation.navigate("scannerQRCode", { reservationId })}
         >
         <Text style={styles.buttonText}>Vérification</Text>
       </TouchableOpacity>
