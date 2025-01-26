@@ -50,6 +50,7 @@ export default function Profile() {
     // Action de déconnexion
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("agentId");
+    console.log("Déconnexion réussie");
     navigation.replace("Login"); // Redirection vers la page Connexion
   };
 

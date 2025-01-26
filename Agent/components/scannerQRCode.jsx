@@ -9,81 +9,125 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { Camera, CameraView } from 'expo-camera';
+import { Camera, CameraView } from "expo-camera";
+import { useNavigation } from "@react-navigation/native";
 
-const ScannerQRCode = ({ navigation }) => {
+export default function ScannerQRCode() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [qrData, setQrData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
+  const [text, setText] = useState("Aucun QR Code scanné pour l'instant.");
 
-  useEffect(() => {
+  // Demande de permission pour la caméra
+  const askForCameraPermission = () => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermission(status === "granted");
     })();
+  };
+
+  useEffect(() => {
+    askForCameraPermission();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    console.log('QR Code scanné:', data);
+    console.log("Type:", type);
+    console.log("Data:", data);
 
     try {
       const url = new URL(data);
-      const params = new URLSearchParams(url.search);
+      if (!url.search) throw new Error("Le QR Code n'a pas de paramètres valides.");
 
+      const params = new URLSearchParams(url.search);
       const qrInfo = {
-        nom: params.get('nom'),
-        prenom: params.get('prenom'),
-        reservation: params.get('reservation'),
-        depart: params.get('depart'),
-        arrivee: params.get('arrivee'),
-        bagages: params.get('bagages'),
-        fauteuilRoulant: params.get('fauteuilRoulant'),
+        nom: params.get("nom"),
+        prenom: params.get("prenom"),
+        reservation: params.get("reservation"),
+        depart: params.get("depart"),
+        arrivee: params.get("arrivee"),
+        bagages: params.get("bagages"),
+        fauteuilRoulant: params.get("fauteuilRoulant"),
       };
 
       setQrData(qrInfo);
       setModalVisible(true);
 
-      
+      setText(
+        'Informations du QR Code précédemment scanné:\n\n' +
+        `Nom: ${qrInfo.nom || "Non défini"}
+        Prénom: ${qrInfo.prenom || "Non défini"}
+        Réservation: ${qrInfo.reservation || "Non défini"}
+        Départ: ${qrInfo.depart || "Non défini"}
+        Arrivée: ${qrInfo.arrivee || "Non défini"}
+        Bagages: ${qrInfo.bagages || "Non défini"}
+        Fauteuil Roulant: ${qrInfo.fauteuilRoulant || "Non défini"}
+      `);
     } catch (error) {
       console.error("Erreur lors de l'analyse du QR Code :", error);
-      Alert.alert("Erreur", "Le QR Code scanné n'est pas valide.");
+      Alert.alert("Erreur", "Le QR Code scanné n'est pas valide ou n'est pas une URL.");
+      setText(`Données brutes : ${data}`);
     }
   };
 
-  if (hasPermission === null) {
-    return <Text>Demande de permission...</Text>;
-  }
-
-  if (hasPermission === false) {
-    return <Text>Permission de la caméra refusée</Text>;
-  }
-
   const handleConfirm = () => {
     setModalVisible(false);
-    navigation.navigate('scannerQRCodeBaggage', { qrData });
+    try {
+      navigation.navigate("StartAssistance2", { qrData });
+    } catch (error) {
+      Alert.alert("Erreur", "L'écran 'scannerQRCodeBaggage' est introuvable.");
+    }
   };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
+
+  if (hasPermission === null) {
+    return (
+      <View style={styles.container}>
+        <Text>Demande de permission pour la caméra...</Text>
+      </View>
+    );
+  }
+  if (hasPermission === false) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ margin: 10 }}>Accès à la caméra refusé</Text>
+        <TouchableOpacity onPress={askForCameraPermission} style={styles.permissionButton}>
+          <Text style={styles.permissionButtonText}>Autoriser la caméra</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.topText}>Scanner un QR Code</Text>
+      <Text style={styles.title}>Scanner le QR Code du PMR</Text>
       <CameraView
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
-
-      {/* Overlay for QR Code Detection Box */}
-      <View style={styles.overlay}>
+        style={styles.camera}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barCodeScannerSettings={{
+          barCodeTypes: ["qr"],
+        }}
+      >
+        {/* Overlay for QR Code Detection Box */}
+        <View style={styles.overlay}>
           <View style={styles.rectangle} />
-      </View>
+        </View>
+      </CameraView>
+
+      <Text style={styles.resultText}>{text}</Text>
 
       {scanned && (
-        <TouchableOpacity style={styles.scanButton} onPress={() => setScanned(false)}>
-          <Text style={styles.scanButtonText}>Scanner à nouveau</Text>
+        <TouchableOpacity style={styles.scanAgainButton} onPress={() => setScanned(false)}>
+          <Text style={styles.scanAgainButtonText}>Scanner à nouveau</Text>
         </TouchableOpacity>
       )}
 
+      {/* Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -95,7 +139,7 @@ const ScannerQRCode = ({ navigation }) => {
           style={styles.modalOverlay}
         >
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Informations du QR Code du PMR</Text>
+            <Text style={styles.modalTitle}>Informations du QR Code</Text>
 
             {qrData && (
               <View style={styles.modalContent}>
@@ -110,10 +154,10 @@ const ScannerQRCode = ({ navigation }) => {
             )}
 
             <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-              <Text style={styles.confirmButtonText}>Confirmer</Text>
+              <Text style={styles.confirmButtonText}>Accepter</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Annuler</Text>
             </TouchableOpacity>
           </View>
@@ -121,53 +165,71 @@ const ScannerQRCode = ({ navigation }) => {
       </Modal>
     </View>
   );
-};
+}
 
 // Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#FFF6F1",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    padding: 16,
   },
-  topText: {
+  title: {
     fontSize: 24,
     fontWeight: "bold",
-    padding: 16,
     color: "#EF4D20",
-    textAlign: "center",
     marginBottom: 20,
+    textAlign: "center",
+  },
+  camera: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
   },
   overlay: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   rectangle: {
-    width: 250,
-    height: 250,
+    width: 200,
+    height: 200,
     borderWidth: 4,
     borderColor: "#EF4D20",
-    backgroundColor: "transparent",
-    borderRadius: 15,
+    borderRadius: 10,
   },
-  scanButton: {
-    position: "absolute",
-    bottom: 50,
-    backgroundColor: "#EF4D20",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  scanButtonText: {
-    color: "#FFFFFF",
+  resultText: {
     fontSize: 18,
+    color: "#333",
+    textAlign: "center",
+    marginVertical: 20,
+  },
+  scanAgainButton: {
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "60%",
+  },
+  scanAgainButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  permissionButton: {
+    backgroundColor: "#EF4D20",
+    padding: 12,
+    borderRadius: 8,
+  },
+  permissionButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "bold",
   },
   modalOverlay: {
@@ -181,30 +243,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF6F1",
     borderRadius: 10,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
+    alignItems: "center",
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 20,
-    textAlign: "center",
   },
   modalContent: {
-    width: "100%",
     marginBottom: 20,
+    textAlign: "center",
   },
   modalText: {
     fontSize: 18,
     color: "#333",
     marginBottom: 10,
+    textAlign: "center",
   },
   confirmButton: {
-    backgroundColor: "#EF4D20",
+    backgroundColor: "#32CD32",
     padding: 15,
     borderRadius: 8,
     width: "100%",
@@ -217,17 +275,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cancelButton: {
-    backgroundColor: "#CCCCCC",
+    backgroundColor: "#FF0000",
     padding: 15,
     borderRadius: 8,
     width: "100%",
     alignItems: "center",
   },
   cancelButtonText: {
-    color: "#333",
+    color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
   },
 });
-
-export default ScannerQRCode;

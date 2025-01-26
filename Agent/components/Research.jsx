@@ -26,7 +26,7 @@ export default function Research() {
   const handleSearch = async (query) => {
     try {
       const response = await fetch(
-        `http://172.20.10.11:3000/reservation/getByPoint?pmr_point_id=${query}`
+        `http://172.20.10.5:3000/reservation/getByPoint?pmr_point_id=${query}`
       );
       const data = await response.json();
 
@@ -58,7 +58,7 @@ export default function Research() {
   const handleAccept = async (reservationId) => {
     try {
       const response = await fetch(
-        `http://172.20.10.11:3000/reservation/getById?id=${reservationId}`
+        `http://172.20.10.5:3000/reservation/getById?id=${reservationId}`
       );
   
       if (!response.ok) {
