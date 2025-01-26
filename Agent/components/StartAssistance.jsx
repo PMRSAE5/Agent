@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
 
 
 export default function StartAssistance({ navigation, route }) {
@@ -25,7 +24,7 @@ export default function StartAssistance({ navigation, route }) {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("scannerQRCode", { reservationId })}
+        onPress={() => navigation.navigate("ScannerQRCode", { reservationId })}
         >
         <Text style={styles.buttonText}>Vérification</Text>
       </TouchableOpacity>

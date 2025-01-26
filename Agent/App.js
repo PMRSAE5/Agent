@@ -11,7 +11,7 @@ import Profile from './components/Profile';
 import Research from './components/Research';
 import NavBar from "./components/Navbar";
 import AssistanceForm from './components/AssistanceForm';
-import ScannerQRCode from './components/ScannerQRCode';
+import ScannerQRCode from './components/scannerQRCode';
 import ScannerQRCodeBagage from './components/ScannerQRCodeBagage';
 import StartAssistance from './components/StartAssistance';
 import StartAssistance2 from './components/StartAssistance2';
@@ -26,7 +26,6 @@ function Tabs() {
     <Tab.Navigator>
       <Tab.Screen name="Research" component={Research} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance" component={StartAssistance} options={{ headerShown: false }} />
-      <Tab.Screen name="QRCode" component={ScannerQRCode} options={{ headerShown: false }} />
       <Tab.Screen name="QRCode" component={ScannerQRCode} options={{ headerShown: false }} />
       <Tab.Screen name="StartAssistance2" component={StartAssistance2} options={{ headerShown: false }} />
       <Tab.Screen name="QRCodeBagage" component={ScannerQRCodeBagage} options={{ headerShown: false }} />

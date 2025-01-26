@@ -178,25 +178,28 @@ const ScannerQRCodeBagage = () => {
     };
 
     // Styles
-    const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#F5F5F5",
-    },
-    title: {
-      fontSize: 24,
-      fontFamily: "RalewayBold",
-      color: "#EF4D20",
-      marginBottom: 20,
-      textAlign: "center",
-    },
-    camera: {
-      flex: 1,
-      width: "100%",
-      alignItems: "center",
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 15, // Ajout de padding latéral
+  },
+  title: {
+    fontSize: 20, // Taille réduite
+    fontFamily: "RalewayBold",
+    color: "#EF4D20",
+    marginBottom: 10, // Marge réduite
+    textAlign: "center",
+    paddingHorizontal: 10, // Prévention du débordement
+    lineHeight: 28, // Meilleure lisibilité
+  },
+  camera: {
+    width: "100%",
+    height: "40%", // Hauteur relative
+    marginVertical: 10, // Espacement ajusté
+  },
     overlay: {
       position: "absolute",
       top: 0,
@@ -207,31 +210,32 @@ const ScannerQRCodeBagage = () => {
       alignItems: "center",
     },
     rectangle: {
-      width: 200,
-      height: 200,
+      width: 250, // Taille augmentée
+      height: 250,
       borderWidth: 4,
       borderColor: "#EF4D20",
-      backgroundColor: "transparent",
       borderRadius: 10,
+      marginTop: 20, // Ajustement position
     },
     resultText: {
-      fontSize: 18,
+      fontSize: 16, // Taille réduite
       color: "#333",
       textAlign: "center",
-      marginVertical: 20,
+      marginVertical: 10, // Marge réduite
+      paddingHorizontal: 5,
+      lineHeight: 22, // Meilleure lisibilité
     },
     scanAgainButton: {
       backgroundColor: "#EF4D20",
-      padding: 12,
+      padding: 10, // Padding réduit
       borderRadius: 8,
+      width: "80%", // Largeur augmentée
+      marginVertical: 10,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.8,
+      shadowOpacity: 0.3, // Ombre plus subtile
       shadowRadius: 2,
-      elevation: 5,
-      alignItems: "center",
-      justifyContent: "center",
-      width: "60%",
+      elevation: 3,
     },
     scanAgainButtonText: {
       color: "#FFFFFF",

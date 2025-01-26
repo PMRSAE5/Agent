@@ -2,8 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
-import ScannerQRCode from "./ScannerQRCode";
+import ScannerQRCode from "./scannerQRCode";
 import AssistanceForm from "./AssistanceForm";
+import Profile from "./Profile";
+import { useNavigation } from '@react-navigation/native';
+
 
 import {
   useFonts,
@@ -26,7 +29,7 @@ export default function Home() {
     switch (activeComponent) {
       case "Research":
         return <Research />;
-      case "ScannerQRCode":
+      case "scannerQRCode":
         return <ScannerQRCode />;
       case "Profile": // Remplacement ici également
         return <Profile />;

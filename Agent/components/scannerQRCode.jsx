@@ -174,18 +174,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF6F1",
     alignItems: "center",
     padding: 16,
+    justifyContent: 'center', // Ajout pour centrage vertical
   },
   title: {
-    fontSize: 24,
+    fontSize: 20, // Réduit la taille
     fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 20,
+    marginBottom: 10, // Marge réduite
     textAlign: "center",
+    paddingHorizontal: 10, // Empêche le débordement
   },
   camera: {
-    flex: 1,
     width: "100%",
-    alignItems: "center",
+    height: '40%', // Hauteur relative au lieu de flex:1
+    marginVertical: 10, // Espacement ajusté
   },
   overlay: {
     position: "absolute",
