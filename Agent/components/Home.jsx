@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./ScannerQRCode";
@@ -18,30 +18,8 @@ import {
   Raleway_900Black,
 } from "@expo-google-fonts/raleway";
 
-export default function Home({ navigation }) {
+export default function Home() {
   const [activeComponent, setActiveComponent] = React.useState(null);
-
-  // Charger la police Raleway PMove
-  const [fontsLoaded] = useFonts({
-    Raleway_100Thin,
-    Raleway_200ExtraLight,
-    Raleway_300Light,
-    RalewayRegular: Raleway_400Regular,
-    Raleway_500Medium,
-    Raleway_600SemiBold,
-    RalewayBold: Raleway_700Bold,
-    RalewayExtraBold: Raleway_800ExtraBold,
-    RalewayBlack: Raleway_900Black,
-  });
-
-  // Si les polices ne sont pas encore chargées, afficher un écran de chargement
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.container}>
-        <Text>Chargement des polices...</Text>
-      </View>
-    );
-  }
 
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -103,6 +81,18 @@ export default function Home({ navigation }) {
               Scanner le QR Code PAX du PMR
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("FiltragePAX")}
+          >
+            <Icon
+              name="filter"
+              size={20}
+              color="#FFFFFF"
+              style={styles.icon}
+            />
+            <Text style={styles.buttonText}>Filtrage PAX du PMR</Text>
+          </TouchableOpacity>
           {/* Bouton pour accéder au formulaire d'assistance */}
           <TouchableOpacity
             style={styles.button}
@@ -111,6 +101,14 @@ export default function Home({ navigation }) {
             <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
             <Text style={styles.buttonText}>Remplir le formulaire d'assistance</Text>
           </TouchableOpacity>
+          {/* Bouton pour tester la page PhotoCapture */}
+          <TouchableOpacity
+  style={styles.button}
+  onPress={() => navigation.navigate("PhotoCapture")}
+>
+  <Icon name="camera" size={20} color="#FFFFFF" style={styles.icon} />
+  <Text style={styles.buttonText}>Tester la capture de photo</Text>
+</TouchableOpacity>
         </View>
       </View>
     </View>

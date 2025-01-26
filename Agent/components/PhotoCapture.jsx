@@ -1,60 +1,81 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Camera } from 'expo-camera';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 
 const PhotoCapture = () => {
-  const [hasPermission, setHasPermission] = useState(null); // Permission pour utiliser la caméra
-  const [photo, setPhoto] = useState(null); // Photo capturée
-  const [isValidated, setIsValidated] = useState(false); // État de validation
-  const cameraRef = useRef(null); // Référence à la caméra
+  const [photo, setPhoto] = useState(null); // Pour stocker l'URI de la photo
+  const [isIdentityVerified, setIsIdentityVerified] = useState(false); // Gestion de la vérification
+  const navigation = useNavigation();
 
-  // Demander la permission d'utiliser la caméra
-  React.useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  // Demander la permission d'accéder à la caméra
+  const requestPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission refusée', 'Vous devez autoriser l\'accès à la caméra pour prendre une photo.');
+      return false;
+    }
+    return true;
+  };
 
-  // Fonction pour capturer une photo
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync();
-      setPhoto(photo.uri); // Enregistrer l'URI de la photo
-      setIsValidated(true); // Simuler une validation
+  // Prendre une photo
+  const takePhoto = async () => {
+    const hasPermission = await requestPermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
     }
   };
 
-  // Si la permission n'est pas accordée
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>Accès à la caméra refusé</Text>;
-  }
+  // Gérer la vérification de l'identité
+  const toggleIdentityVerification = () => {
+    setIsIdentityVerified(!isIdentityVerified);
+  };
+
+  // Naviguer vers AssistanceForm
+  const goToAssistanceForm = () => {
+    navigation.navigate('AssistanceForm');
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Validation de l'identité du PMR</Text>
-
-      {!photo ? (
-        <Camera style={styles.camera} ref={cameraRef}>
-          <View style={styles.cameraButtonContainer}>
-            <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-              <Text style={styles.captureButtonText}>Prendre une photo</Text>
-            </TouchableOpacity>
-          </View>
-        </Camera>
-      ) : (
+      {photo ? (
         <View style={styles.previewContainer}>
-          <Image source={{ uri: photo }} style={styles.capturedImage} />
-          {isValidated && (
+          <Image source={{ uri: photo }} style={styles.previewImage} />
+
+          <TouchableOpacity 
+            style={[styles.checkboxContainer, isIdentityVerified && styles.checkedContainer]} 
+            onPress={toggleIdentityVerification}
+          >
+            <View style={[styles.checkbox, isIdentityVerified && styles.checked]} />
+            <Text style={styles.checkboxText}>J'atteste de l'identité de mon PMR</Text>
+          </TouchableOpacity>
+
+          {isIdentityVerified && (
             <View style={styles.validationContainer}>
               <View style={styles.greenCircle} />
-              <Text style={styles.validationText}>Identité du PMR validé</Text>
+              <Text style={styles.validationText}>Identité vérifiée</Text>
             </View>
           )}
+
+          {isIdentityVerified && (
+            <TouchableOpacity style={styles.nextButton} onPress={goToAssistanceForm}>
+              <Text style={styles.nextButtonText}>Suivant</Text>
+            </TouchableOpacity>
+          )}
         </View>
+      ) : (
+        <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
+          <Text style={styles.captureButtonText}>Prendre une photo</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -63,41 +84,56 @@ const PhotoCapture = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  camera: {
-    width: '100%',
-    height: '70%',
-    justifyContent: 'flex-end',
+  previewContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  cameraButtonContainer: {
+  previewImage: {
+    width: 300,
+    height: 400,
+    resizeMode: 'contain',
+    borderRadius: 10,
     marginBottom: 20,
   },
   captureButton: {
-    backgroundColor: '#007bff',
     padding: 15,
-    borderRadius: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
   },
   captureButtonText: {
     color: '#fff',
     fontSize: 16,
   },
-  previewContainer: {
+  checkboxContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  capturedImage: {
-    width: 300,
-    height: 300,
-    borderRadius: 10,
     marginBottom: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+  },
+  checkedContainer: {
+    borderColor: '#4CAF50',
+  },
+  checked: {
+    backgroundColor: '#4CAF50',
+  },
+  checkboxText: {
+    fontSize: 16,
   },
   validationContainer: {
     alignItems: 'center',
@@ -105,13 +141,23 @@ const styles = StyleSheet.create({
   greenCircle: {
     width: 50,
     height: 50,
-    backgroundColor: 'green',
     borderRadius: 25,
+    backgroundColor: '#4CAF50',
     marginBottom: 10,
   },
   validationText: {
-    fontSize: 18,
-    color: 'green',
+    fontSize: 16,
+    color: '#4CAF50',
+    fontWeight: 'bold',
+  },
+  nextButton: {
+    padding: 15,
+    backgroundColor: '#2196F3',
+    borderRadius: 5,
+  },
+  nextButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
