@@ -51,12 +51,16 @@ export default function Profile() {
   
 
   const handleLogout = async () => {
+    try {
     // Action de déconnexion
     await AsyncStorage.removeItem("user");
     await AsyncStorage.removeItem("agentId");
     console.log("Déconnexion réussie");
     navigation.replace("Login"); // Redirection vers la page Connexion
-  };
+  } catch (error) {
+    console.error("Erreur lors de la déconnexion :", error);
+  }
+}
 
   return (
     <SafeAreaView
@@ -166,7 +170,7 @@ const styles = StyleSheet.create({
   animation: {
     width: 150,
     height: 150,
-    marginBottom: 20,
+    marginTop: 10,
   },
   profileName: {
     marginTop: 20,

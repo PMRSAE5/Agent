@@ -17,12 +17,14 @@ import StartAssistance2 from './components/StartAssistance2';
 import StartAssistance3 from './components/StartAssistance3';
 import StartAssistance4 from './components/StartAssistance4';
 import PhotoCapture from './components/PhotoCapture';
+import EndAssistance from './components/EndAssistance';
 import { ThemeProvider, ThemeContext } from "./ThemeContext";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState("SplashScreen");
 
   // Vérifier si l'utilisateur est connecté
   useEffect(() => {
@@ -35,9 +37,17 @@ export default function App() {
     checkUser();
   }, []);
 
+  // Empêche l'accès à la `NavBar` si l'utilisateur n'est pas connecté
+  const shouldDisplayNavBar = isLoggedIn && currentScreen !== "Login";
+
   return (
     <ThemeProvider>
-      <NavigationContainer>
+      <NavigationContainer
+      onStateChange={(state) => {
+        const currentRoute = state.routes[state.index];
+        setCurrentScreen(currentRoute.name);
+      }}
+      >
         <Stack.Navigator initialRouteName="SplashScreen">
           {/* SplashScreen */}
           <Stack.Screen
@@ -48,7 +58,9 @@ export default function App() {
           {/* Login */}
           <Stack.Screen
             name="Login"
-            component={Login}
+            component={(props) => (
+              <Login {...props} onLoginSuccess={() => setIsLoggedIn(true)} />
+            )}
             options={{ headerShown: false }}
           />
           {/* Home */}
@@ -121,15 +133,30 @@ export default function App() {
             options={{ headerShown: false }}
           />
 
+          {/* EndAssistance */}
+          <Stack.Screen
+            name="EndAssistance"
+            component={EndAssistance}
+            options={{ headerShown: false }}
+          />
+
           {/* Profile */}
           <Stack.Screen
             name="Profile"
-            component={Profile}
+            component={(props) => (
+              <Profile
+                {...props}
+                onLogout={() => {
+                  setIsLoggedIn(false);
+                  props.navigation.replace("Login");
+                }}
+              />
+            )}
             options={{ headerShown: false }}
           />     
         </Stack.Navigator>
         {/* NavBar: affichée uniquement si l'utilisateur est connecté */}
-        {isLoggedIn && <NavBar />}
+        {shouldDisplayNavBar && <NavBar />}
       </NavigationContainer>
     </ThemeProvider>
   );

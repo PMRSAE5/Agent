@@ -20,9 +20,8 @@ import {
 export default function Login({ navigation, onLoginSuccess }) {
   const [name, setName] = useState(""); // Stocker le nom d'utilisateur
   const [password, setPassword] = useState(""); // Stocker le mot de passe
-  const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
 
-  const [fontsLoaded] = useFonts({
+  useFonts({
     RalewayThin: Raleway_100Thin,
     RalewayExtraLight: Raleway_200ExtraLight,
     RalewayLight: Raleway_300Light,
@@ -43,7 +42,7 @@ export default function Login({ navigation, onLoginSuccess }) {
           const { name, password, agentId, affiliation } = JSON.parse(userData); // Inclure affiliation
           setName(name); // Pré remplir le nom
           setPassword(password); // Pré remplir le mot de passe
-          setStayLoggedIn(true); // Cocher "rester connecté"
+          // setStayLoggedIn(true); // Cocher "rester connecté"
           console.log("Nom :", name, "Mot de passe :", password, "Affiliation :", affiliation);
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
@@ -59,11 +58,6 @@ export default function Login({ navigation, onLoginSuccess }) {
   
     loadUserData();
   }, []);
-  
-
-  if (!fontsLoaded) {
-    return null; // ou un indicateur de chargement
-  }
 
   // Fonction pour gérer la connexion
   const handleLogin = async () => {
@@ -103,12 +97,9 @@ export default function Login({ navigation, onLoginSuccess }) {
         // Toujours enregistrer l'ID de l'agent
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
-        if (stayLoggedIn) {
-          // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
-          await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId, surname, affiliation }));
-        } else {
-          await AsyncStorage.removeItem('user');
-        }
+        // Enregistrer les infos de l'utilisateur dans AsyncStorage
+        await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId, surname, affiliation }));
+        onLoginSuccess(); // Appeler la fonction de succès
         navigation.replace("Home");
       }
     } catch (error) {
@@ -153,22 +144,18 @@ export default function Login({ navigation, onLoginSuccess }) {
 
         <View style={styles.checkboxSection}>
         <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
-            <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
-          </TouchableOpacity>
-          <Text style={styles.label}>Rester connecté (obligatoire !)</Text>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
           </TouchableOpacity>
         </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.buttonPrimary}
-          onPress={handleLogin}
-        >
+        {/* Bouton de connexion */}
+        <View>
+        <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogin}>
           <Text style={styles.buttonTextPrimary}>Se connecter</Text>
         </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

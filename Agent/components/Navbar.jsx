@@ -57,15 +57,13 @@ export default function NavBar() {
   };
 
   // Charger les polices
-  const [fontsLoaded] = useFonts({
+  useFonts({
     RalewayRegular: Raleway_400Regular,
     RalewayBold: Raleway_700Bold,
     RalewayExtraBold: Raleway_800ExtraBold,
     Raleway_600SemiBold: Raleway_600SemiBold,
     RalewayBlack: Raleway_900Black,
   });
-
-  if (!fontsLoaded) return null;
 
   return (
     <View style={styles.navbarContainer}>
