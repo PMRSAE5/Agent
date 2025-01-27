@@ -7,11 +7,13 @@ import {
   Text,
   TouchableOpacity,
   Switch,
+  Animated,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts, Raleway_400Regular, Raleway_700Bold } from "@expo-google-fonts/raleway";
 
 export default function Profile() {
   const [form, setForm] = useState({
@@ -23,32 +25,47 @@ export default function Profile() {
     name: "",
     surname: "",
     agentId: "",
-    affiliation: "", // Ajout de l'affiliation
+    affiliation: "",
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useState(new Animated.Value(0))[0];
 
   const navigation = useNavigation();
 
-  // Charger les informations utilisateur après la connexion
+  useFonts({
+    Raleway_400Regular,
+    Raleway_700Bold,
+  });
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
         const user = await AsyncStorage.getItem("user");
         // const storedFontSize = await AsyncStorage.getItem("fontSize");
 
-        console.log("Données récupérées depuis AsyncStorage :", JSON.parse(user)); // Log pour vérifier
-  
+        console.log("Données récupérées depuis AsyncStorage :", JSON.parse(user));
+
         if (user) {
           const { name, surname, agentId, affiliation } = JSON.parse(user);
           setUserInfo({ name, surname, agentId, affiliation });
         }
       } catch (error) {
         console.error("Erreur lors du chargement des informations utilisateur :", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-  
+
     loadUserInfo();
   }, []);
-  
 
   const handleLogout = async () => {
     try {
@@ -88,9 +105,11 @@ export default function Profile() {
         </View>
       </View>
 
-      <ScrollView>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Préférences</Text>
+        <ScrollView>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { fontFamily: "Raleway_700Bold" }]}>
+              Préférences
+            </Text>
 
           {/* Dark Mode */}
           <View style={styles.row}>
@@ -144,10 +163,10 @@ export default function Profile() {
         </View>
       </ScrollView>
 
-      {/* Bouton de déconnexion
+      {/* Bouton de déconnexion */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Déconnexion</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

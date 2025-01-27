@@ -67,7 +67,6 @@ export default function Login({ navigation, onLoginSuccess }) {
     console.log("Connecting to: http://172.20.10.5:3000");
 
     try {
-      // Vérifiez si les champs sont remplis avant d'envoyer la requête
       if (!name || !password) {
         Alert.alert("Erreur", "Veuillez remplir tous les champs.");
         return;
@@ -103,10 +102,11 @@ export default function Login({ navigation, onLoginSuccess }) {
         navigation.replace("Home");
       }
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
+      console.error("Erreur lors de la connexion :", error.message);
       Alert.alert("Erreur du login", "Nom ou mot de passe invalide.");
     }
   };
+  
 
   const handleForgotPassword = () => {
     Alert.alert(

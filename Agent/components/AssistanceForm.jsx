@@ -129,24 +129,16 @@ const AssistanceForm = () => {
             style={[styles.yesNoButton, hasSpecificNeeds === true && styles.selectedButton]}
             onPress={() => setHasSpecificNeeds(true)}
           >
-            <MaterialIcons name="check" size={20} color="#FFFFFF" />
             <Text style={styles.yesNoText}>Oui</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.yesNoButton, hasSpecificNeeds === false && styles.selectedButton]}
             onPress={() => setHasSpecificNeeds(false)}
           >
-            <MaterialIcons name="close" size={20} color="#FFFFFF" />
             <Text style={styles.yesNoText}>Non</Text>
           </TouchableOpacity>
         </View>
-        {errors.hasSpecificNeeds && (
-          <Animated.Text
-            style={[styles.errorText, { opacity: errorAnim }]}
-          >
-            {errors.hasSpecificNeeds}
-          </Animated.Text>
-        )}
+        {errors.hasSpecificNeeds && <Text style={styles.errorText}>{errors.hasSpecificNeeds}</Text>}
 
         {hasSpecificNeeds === true && (
           <>
@@ -156,35 +148,19 @@ const AssistanceForm = () => {
               value={specificNeeds}
               onChangeText={setSpecificNeeds}
               multiline
-              placeholder="Exemple : Le PMR a besoin d'une assistance pour monter dans le train."
+              placeholder="Décrivez les besoins spécifiques..."
               placeholderTextColor="#A5A5A5"
             />
-            {errors.specificNeeds && (
-              <Animated.Text
-                style={[styles.errorText, { opacity: errorAnim }]}
-              >
-                {errors.specificNeeds}
-              </Animated.Text>
-            )}
+            {errors.specificNeeds && <Text style={styles.errorText}>{errors.specificNeeds}</Text>}
 
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setIsStaffInformed(!isStaffInformed)}
-            >
-              <MaterialIcons
-                name={isStaffInformed ? "check-box" : "check-box-outline-blank"}
-                size={24}
-                color={isStaffInformed ? "#EF4D20" : "#4A5568"}
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity
+                style={[styles.checkbox, isStaffInformed && styles.checked]}
+                onPress={() => setIsStaffInformed(!isStaffInformed)}
               />
               <Text style={styles.label}>Le personnel a été informé des besoins spécifiques.</Text>
-            </TouchableOpacity>
-            {errors.isStaffInformed && (
-              <Animated.Text
-                style={[styles.errorText, { opacity: errorAnim }]}
-              >
-                {errors.isStaffInformed}
-              </Animated.Text>
-            )}
+            </View>
+            {errors.isStaffInformed && <Text style={styles.errorText}>{errors.isStaffInformed}</Text>}
           </>
         )}
       </View>
@@ -199,24 +175,16 @@ const AssistanceForm = () => {
             style={[styles.yesNoButton, isFeedbackPositive === true && styles.selectedButton]}
             onPress={() => setIsFeedbackPositive(true)}
           >
-            <MaterialIcons name="check" size={20} color="#FFFFFF" />
             <Text style={styles.yesNoText}>Oui</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.yesNoButton, isFeedbackPositive === false && styles.selectedButton]}
             onPress={() => setIsFeedbackPositive(false)}
           >
-            <MaterialIcons name="close" size={20} color="#FFFFFF" />
             <Text style={styles.yesNoText}>Non</Text>
           </TouchableOpacity>
         </View>
-        {errors.isFeedbackPositive && (
-          <Animated.Text
-            style={[styles.errorText, { opacity: errorAnim }]}
-          >
-            {errors.isFeedbackPositive}
-          </Animated.Text>
-        )}
+        {errors.isFeedbackPositive && <Text style={styles.errorText}>{errors.isFeedbackPositive}</Text>}
 
         {isFeedbackPositive === false && (
           <>
@@ -226,16 +194,10 @@ const AssistanceForm = () => {
               value={feedbackDetails}
               onChangeText={setFeedbackDetails}
               multiline
-              placeholder="Exemple : Le PMR a rencontré des difficultés pour accéder au train."
+              placeholder="Décrivez les problèmes rencontrés..."
               placeholderTextColor="#A5A5A5"
             />
-            {errors.feedbackDetails && (
-              <Animated.Text
-                style={[styles.errorText, { opacity: errorAnim }]}
-              >
-                {errors.feedbackDetails}
-              </Animated.Text>
-            )}
+            {errors.feedbackDetails && <Text style={styles.errorText}>{errors.feedbackDetails}</Text>}
           </>
         )}
       </View>
@@ -278,12 +240,22 @@ const styles = StyleSheet.create({
     fontFamily: "RalewayRegular",
     color: "#4A5568",
     marginBottom: 8,
-    marginLeft: 10,
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: "#EF4D20",
+    borderRadius: 4,
+    marginRight: 10,
+  },
+  checked: {
+    backgroundColor: "#EF4D20",
   },
   yesNoContainer: {
     flexDirection: "row",
@@ -306,7 +278,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "RalewayBold",
     fontSize: 16,
-    marginLeft: 5,
   },
   input: {
     width: "100%",
