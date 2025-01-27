@@ -18,12 +18,11 @@ import {
 } from "@expo-google-fonts/raleway";
 
 export default function Login({ navigation, onLoginSuccess }) {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
-  const [loginError, setLoginError] = useState(null);
+  const [name, setName] = useState(""); // Stocker le nom d'utilisateur
+  const [password, setPassword] = useState(""); // Stocker le mot de passe
+  const [stayLoggedIn, setStayLoggedIn] = useState(false); // Stocker "rester connecté"
 
-  const [fontsLoaded] = useFonts({
+  useFonts({
     RalewayThin: Raleway_100Thin,
     RalewayExtraLight: Raleway_200ExtraLight,
     RalewayLight: Raleway_300Light,
@@ -36,75 +35,88 @@ export default function Login({ navigation, onLoginSuccess }) {
   });
 
   useEffect(() => {
+    // Charger les infos de l'utilisateur depuis AsyncStorage
     const loadUserData = async () => {
       try {
         const userData = await AsyncStorage.getItem('user');
         if (userData) {
-          const { name, password, agentId, affiliation } = JSON.parse(userData);
-          setName(name);
-          setPassword(password);
-          setStayLoggedIn(true);
+          const { name, password, agentId, affiliation } = JSON.parse(userData); // Inclure affiliation
+          setName(name); // Pré remplir le nom
+          setPassword(password); // Pré remplir le mot de passe
+          setStayLoggedIn(true); // Cocher "rester connecté"
           console.log("Nom :", name, "Mot de passe :", password, "Affiliation :", affiliation);
         } else {
           const agentIdData = await AsyncStorage.getItem('agentId');
           if (agentIdData) {
             const { agentId } = JSON.parse(agentIdData);
-            console.log("Loaded agentId:", agentId);
+            console.log("Loaded agentId:", agentId); // Afficher l'ID de l'agent dans les logs
           }
         }
       } catch (error) {
         console.error("Erreur lors du chargement des données utilisateur :", error);
       }
     };
-
+  
     loadUserData();
   }, []);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
   const handleLogin = async () => {
-    setLoginError(null);
-
-    if (!name || !password) {
-      setLoginError("Veuillez remplir tous les champs.");
-      return;
-    }
-
     try {
+      if (!name || !password) {
+        Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+        return;
+      }
+  
       const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
-      console.log("Response from login:", response.data);
-
+  
       if (response.status === 200) {
+        const { agent } = response.data; // Récupère les données de l'agent
         const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
-        const agentId = agentIdResponse.data[0].ID_Agent;
-        console.log("Agent ID response:", agentIdResponse.data);
-
-        await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
-
-        if (stayLoggedIn) {
-          await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
+        const agentId = agentIdResponse.data[0]?.ID_Agent;
+  
+        if (agentId && agent.surname) {
+          // Stocker toutes les données nécessaires dans AsyncStorage
+          await AsyncStorage.setItem(
+            'user',
+            JSON.stringify({
+              name: agent.name,
+              surname: agent.surname,
+              agentId: agentId,
+              affiliation: agent.affiliation,
+            })
+          );
+  
+          if (stayLoggedIn) {
+            console.log("Utilisateur stocké avec succès :", {
+              name: agent.name,
+              surname: agent.surname,
+              agentId,
+              affiliation: agent.affiliation,
+            });
+          }
+  
+          navigation.replace("Home");
         } else {
-          await AsyncStorage.removeItem('user');
+          throw new Error("Données de l'agent incomplètes.");
         }
-        navigation.replace("Home");
       }
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      setLoginError("Identifiants incorrects. Vérifiez vos informations.");
+      console.error("Erreur lors de la connexion :", error.message);
+      Alert.alert("Erreur du login", "Nom ou mot de passe invalide.");
     }
   };
+  
 
   const handleForgotPassword = () => {
     Alert.alert(
       "Mot de passe oublié ?",
       "Veuillez vous diriger vers PMove Support pour récupérer votre mot de passe lié à votre ID Agent."
-    );
+    ); // Pop-up adaptatif
   };
 
   return (
     <View style={styles.container}>
+      {/* Logo au-dessus du formulaire */}
       <Image
         source={require("../assets/PMoveLogoSANSTITRE.png")}
         style={styles.logo}
@@ -118,48 +130,38 @@ export default function Login({ navigation, onLoginSuccess }) {
           style={styles.input}
           placeholder="Nom d'utilisateur"
           value={name}
-          onChangeText={(text) => {
-            setName(text);
-            setLoginError(null);
-          }}
+          onChangeText={setName}
           autoCapitalize="none"
         />
         <TextInput
           style={styles.input}
           placeholder="Mot de passe"
           value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            setLoginError(null);
-          }}
+          onChangeText={setPassword}
           secureTextEntry
         />
 
-        {loginError && (
-          <View style={styles.errorContainer}>
-            <Icon name="exclamation-circle" size={16} color="#EF4D20" />
-            <Text style={styles.errorText}>{loginError}</Text>
-          </View>
-        )}
-
         <View style={styles.checkboxSection}>
-          <View style={styles.checkboxContainer}>
-            <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
-              <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
-            </TouchableOpacity>
-            <Text style={styles.label}>Rester connecté</Text>
-          </View>
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
+            <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
+          </TouchableOpacity>
+          <Text style={styles.label}>Rester connecté (obligatoire !)</Text>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
           </TouchableOpacity>
         </View>
+        </View>
 
+        {/* Bouton de connexion */}
+        <View>
         <TouchableOpacity
           style={styles.buttonPrimary}
           onPress={handleLogin}
         >
           <Text style={styles.buttonTextPrimary}>Se connecter</Text>
         </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -168,20 +170,20 @@ export default function Login({ navigation, onLoginSuccess }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF6F1",
+    backgroundColor: "#FFF6F1", // Fond de la page
     padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "center", // Centrer verticalement
+    alignItems: "center", // Centrer horizontalement
   },
   logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 10,
+    width: 500, // Taille de l'image
+    height: 300, // Taille de l'image
+    marginBottom: -70, // Marge en bas
   },
   title: {
     fontSize: 27,
     fontFamily: "RalewayBold",
-    color: "#EF4D20",
+    color: "#EF4D20", // Couleur du titre
     marginBottom: 10,
     textAlign: "center",
   },
@@ -199,20 +201,21 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 50,
-    borderColor: "#EF4D20",
+    borderColor: "#EF4D20", // Bordure des champs
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 15,
     backgroundColor: "#FFFFFF",
     fontSize: 16,
-    color: "#000",
+    color: "#000", // Texte des champs
     borderRadius: 8,
   },
   checkboxSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column", // Alignement horizontal
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     marginBottom: 20,
+    paddingHorizontal: 10,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -225,37 +228,31 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#555",
+    color: "#FF000",
+    flex: 1,
+    flexWrap: "wrap",
   },
   forgotPassword: {
     fontSize: 14,
-    color: "#EF4D20",
+    color: "#FF000", // Couleur du texte
     textDecorationLine: "underline",
+    marginTop: 10,
   },
   buttonPrimary: {
-    backgroundColor: "#EF4D20",
+    backgroundColor: "#EF4D20", // Couleur du bouton
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 20,
   },
   buttonTextPrimary: {
-    color: "#FFFFFF",
+    color: "#FFFFFF", // Couleur du texte du bouton
     fontFamily: "RalewayBold",
     fontSize: 16,
   },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FEE8E1',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  errorText: {
-    color: '#EF4D20',
-    marginLeft: 8,
-    fontFamily: 'RalewayMedium',
-    fontSize: 14,
+  error: {
+    color: "#EF4D20",
+    textAlign: "center",
+    marginBottom: 16,
   },
 });

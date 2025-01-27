@@ -10,17 +10,29 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts, Raleway_400Regular, Raleway_700Bold } from "@expo-google-fonts/raleway";
+
+// Importez les images
+const ratpImage = require("../assets/RATP.png");
+const sncfImage = require("../assets/SNCF.png");
+const airFranceImage = require("../assets/AirFrance.png");
 
 export default function Research() {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const [role, setRole] = useState(null); // Rôle de l'agent (RATP, SNCF, AirFrance)
   const [searchQuery, setSearchQuery] = useState(""); // Terme de recherche
   const [reservations, setReservations] = useState([]); // Liste des réservations
   const [selectedTrajet, setSelectedTrajet] = useState(null); // Trajet sélectionné
   const [modalVisible, setModalVisible] = useState(false); // Visibilité de la modal
+
+  let [fontsLoaded] = useFonts({
+    Raleway_400Regular,
+    Raleway_700Bold,
+  });
 
   // Récupérer les réservations correspondant au lieu de départ
   const handleSearch = async (query) => {
@@ -31,7 +43,7 @@ export default function Research() {
       const data = await response.json();
 
       console.log("Data fetched from API:", data);
-  
+
       if (response.ok) {
         setReservations(data);
       } else {
@@ -43,8 +55,6 @@ export default function Research() {
       Alert.alert("Erreur", "Une erreur est survenue lors de la récupération des réservations.");
     }
   };
-  
-  
 
   // Gérer la décision de refuser une réservation
   const handleRefuse = (reservationId) => {
@@ -60,16 +70,16 @@ export default function Research() {
       const response = await fetch(
         `http://172.20.10.11:3000/reservation/getById?id=${reservationId}`
       );
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Erreur serveur :", errorText);
         Alert.alert("Erreur", "Impossible de récupérer les détails de la réservation.");
         return;
       }
-  
+
       const { reservation } = await response.json();
-  
+
       // Afficher les informations détaillées dans un Alert ou rediriger vers une page dédiée
       Alert.alert(
         "Détails de la réservation",
@@ -86,7 +96,6 @@ export default function Research() {
             text: "Commencer l'accompagnement",
             onPress: () => navigation.navigate("StartAssistance", { reservationId }),
           },
-          
         ]
       );
     } catch (error) {
@@ -95,8 +104,6 @@ export default function Research() {
     }
   };
 
-  
-  
   // Afficher les détails du trajet dans une modal
   const renderTrajetDetails = () => {
     if (!selectedTrajet) return null;
@@ -118,18 +125,26 @@ export default function Research() {
     );
   };
 
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Chargement des polices...</Text>
+      </View>
+    );
+  }
+
   if (!role) {
     return (
       <View style={styles.roleSelectionContainer}>
-        <Text style={styles.roleSelectionTitle}>Choisissez votre rôle :</Text>
+        <Text style={styles.roleSelectionTitle}>Type d'Agent :</Text>
         <TouchableOpacity style={styles.roleButton} onPress={() => setRole("RATP")}>
-          <Text style={styles.roleButtonText}>Agent RATP</Text>
+          <Image source={ratpImage} style={styles.roleImage} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.roleButton} onPress={() => setRole("SNCF")}>
-          <Text style={styles.roleButtonText}>Agent SNCF</Text>
+          <Image source={sncfImage} style={styles.roleImage} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.roleButton} onPress={() => setRole("AirFrance")}>
-          <Text style={styles.roleButtonText}>Agent AirFrance</Text>
+          <Image source={airFranceImage} style={styles.roleImage} />
         </TouchableOpacity>
       </View>
     );
@@ -192,6 +207,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
+    paddingTop: 80,
   },
   roleSelectionContainer: {
     flex: 1,
@@ -204,31 +220,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 20,
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
   roleButton: {
-    backgroundColor: "#EF4D20",
-    padding: 15,
+    backgroundColor: "#FFFFFF",
+    padding: 10,
     borderRadius: 8,
     marginVertical: 10,
-    width: "60%",
+    width: "45%",
     alignItems: "center",
-  },
-  roleButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  centeredContent: {
-    flex: 1,
+    borderWidth: 2,
+    borderColor: "#EF4D20",
     justifyContent: "center",
-    alignItems: "center",
+  },
+  roleImage: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   searchContainer: {
-    width: "90%",
+    width: "80%",
     padding: 16,
     backgroundColor: "#FFF6F1",
     borderBottomWidth: 1,
     borderBottomColor: "#EF4D20",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
   input: {
     width: "100%",
@@ -240,40 +258,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     fontSize: 16,
     color: "#000",
-  },
-  suggestionsList: {
-    width: "90%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#EF4D20",
-  },
-  suggestionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EF4D20",
-  },
-  suggestionText: {
-    fontSize: 16,
-    color: "#000",
+    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   resultItem: {
     backgroundColor: "#FFFFFF",
     padding: 16,
-    margin: 16,
+    marginVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#EF4D20",
     elevation: 2,
+    width: "90%",
+    alignSelf: "center",
   },
   resultTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#EF4D20",
+    textAlign: "center",
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
   resultSubtitle: {
     fontSize: 14,
     color: "#555",
+    textAlign: "center",
+    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   trajetContainer: {
     marginTop: 10,
@@ -282,6 +291,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
+  },
+  button: {
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
   },
   acceptButton: {
     backgroundColor: "green",
@@ -299,11 +316,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 16,
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
   detailText: {
     fontSize: 16,
     color: "#333",
     marginBottom: 8,
+    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   buttonClose: {
     backgroundColor: "#EF4D20",
@@ -316,5 +335,12 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+  },
+  loadingText: {
+    fontSize: 20,
+    color: "#EF4D20",
+    fontWeight: "bold",
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
 });

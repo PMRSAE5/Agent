@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { useFonts, Raleway_400Regular, Raleway_700Bold } from '@expo-google-fonts/raleway';
 
 const PhotoCapture = () => {
   const [photos, setPhotos] = useState({
@@ -11,6 +12,19 @@ const PhotoCapture = () => {
   const [selectedType, setSelectedType] = useState('person');
   const [isVerified, setIsVerified] = useState(false);
   const navigation = useNavigation();
+
+  let [fontsLoaded] = useFonts({
+    Raleway_400Regular,
+    Raleway_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Chargement...</Text>
+      </View>
+    );
+  }
 
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -167,6 +181,7 @@ const styles = StyleSheet.create({
     color: '#EF4D20',
     textAlign: 'center',
     marginVertical: 20,
+    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
   },
   selectorContainer: {
     flexDirection: 'row',
@@ -185,6 +200,7 @@ const styles = StyleSheet.create({
   typeButtonText: {
     color: '#333',
     fontWeight: '500',
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
   },
   activeTypeText: {
     color: '#FFF',
@@ -221,6 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     textAlign: 'center',
     width: '80%',
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
   },
   captureButton: {
     backgroundColor: '#EF4D20',
@@ -234,6 +251,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
   },
   verificationSection: {
     width: '100%',
@@ -269,6 +287,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     flex: 1,
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
   },
   nextButton: {
     backgroundColor: '#EF4D20', // Changé depuis '#2196F3'
@@ -282,6 +301,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
   },
   retakeButton: {
     position: 'absolute',
@@ -294,6 +314,7 @@ const styles = StyleSheet.create({
   retakeText: {
     color: 'white',
     fontSize: 12,
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
   },
   validationContainer: {
     alignItems: 'center',
@@ -317,6 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#4CAF50',
     fontWeight: 'bold',
+    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
   },
   warningText: {
     color: '#EF4D20',
@@ -325,25 +347,33 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
     width: '100%',
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
   },
   previewWrapper: {
     alignItems: 'center',
   },
   privacyWarning: {
-  position: 'absolute',
-  top: '50%', // Centre verticalement
-  left: 0,
-  right: 0,
-  transform: [{ translateY: -50 }], // Ajustement précis du centrage
-  color: '#EF4D20',
-  fontSize: 12,
-  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  padding: 10,
-  borderRadius: 4,
-  textAlign: 'center',
-  marginHorizontal: 20,
-  lineHeight: 16,
-},
+    position: 'absolute',
+    top: '50%', // Centre verticalement
+    left: 0,
+    right: 0,
+    transform: [{ translateY: -50 }], // Ajustement précis du centrage
+    color: '#EF4D20',
+    fontSize: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 10,
+    borderRadius: 4,
+    textAlign: 'center',
+    marginHorizontal: 20,
+    lineHeight: 16,
+    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+  },
+  loadingText: {
+    fontSize: 20,
+    color: '#EF4D20',
+    fontWeight: 'bold',
+    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+  },
 });
 
 export default PhotoCapture;

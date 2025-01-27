@@ -1,6 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Image } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
+
+// Obtenir les dimensions de l'écran
+const { width } = Dimensions.get("window");
 
 const TripInProgress = ({ navigation }) => {
   // Simuler un délai avant la redirection vers le formulaire d'assistance
@@ -25,11 +29,12 @@ const TripInProgress = ({ navigation }) => {
         <Text style={styles.loadingText}>En route...</Text>
       </View>
 
-      {/* Illustration optionnelle */}
-      <Image
-        source={require("../assets/walking.png")} // Remplacez par votre image
-        style={styles.illustration}
-        resizeMode="contain"
+      {/* Animation Lottie */}
+      <LottieView
+        source={require("../assets/wheelchair.json")} // Remplacez par votre fichier JSON Lottie
+        autoPlay
+        loop
+        style={styles.animation}
       />
     </View>
   );
@@ -67,9 +72,9 @@ const styles = StyleSheet.create({
     color: "#EF4D20",
     marginTop: 10,
   },
-  illustration: {
-    width: 200,
-    height: 200,
+  animation: {
+    width: width, // Largeur de l'écran
+    height: width, // Même hauteur pour un carré
   },
 });
 

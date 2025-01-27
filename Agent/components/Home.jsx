@@ -1,192 +1,153 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Animated } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Research from "./Research";
-import ScannerQRCode from "./scannerQRCode";
-import Profile from "./Profile";
-import AssistanceForm from "./AssistanceForm";
-import { useNavigation } from '@react-navigation/native';
-
-import {
-  useFonts,
-  Raleway_100Thin,
-  Raleway_200ExtraLight,
-  Raleway_300Light,
-  Raleway_400Regular,
-  Raleway_500Medium,
-  Raleway_600SemiBold,
-  Raleway_700Bold,
-  Raleway_800ExtraBold,
-  Raleway_900Black,
-} from "@expo-google-fonts/raleway";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native";
+import { useFonts, Raleway_400Regular, Raleway_700Bold } from "@expo-google-fonts/raleway";
 
 export default function Home() {
-  const [activeComponent, setActiveComponent] = React.useState(null);
-  const navigation = useNavigation(); // Hook de navigation
+  const navigation = useNavigation();
+  const [agentInfo, setAgentInfo] = useState({ name: "", surname: "" });
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useState(new Animated.Value(0))[0];
 
-  const renderActiveComponent = () => {
-    switch (activeComponent) {
-      case "Research":
-        return <Research />;
-      case "ScannerQRCode":
-        return <ScannerQRCode />;
-      default:
-        return null;
-    }
-  };
-
-  const [fontsLoaded] = useFonts({
-    Raleway_100Thin,
-    Raleway_200ExtraLight,
-    Raleway_300Light,
-    RalewayRegular: Raleway_400Regular,
-    Raleway_500Medium,
-    Raleway_600SemiBold,
-    RalewayBold: Raleway_700Bold,
-    RalewayExtraBold: Raleway_800ExtraBold,
-    RalewayBlack: Raleway_900Black,
+  let [fontsLoaded] = useFonts({
+    Raleway_400Regular,
+    Raleway_700Bold,
   });
 
-  const handleAlert = (message, component) => {
-    Alert.alert(
-      "Recommandation",
-      message,
-      [
-        {
-          text: "Annuler",
-          onPress: () => setActiveComponent(component),
-          style: "default",
-        },
-        {
-          text: "Continuer",
-          style: "cancel",
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+  // Animation au chargement de la page
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
-  // Si un composant est actif, afficher uniquement ce composant avec une icône pour revenir en arrière
-  if (activeComponent) {
+  // Charger les informations de l'agent depuis AsyncStorage
+  useEffect(() => {
+    const loadAgentInfo = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem("user");
+        console.log("Données récupérées depuis AsyncStorage :", storedUser);
+
+        if (storedUser) {
+          const { name, surname } = JSON.parse(storedUser);
+          setAgentInfo({ name, surname });
+        } else {
+          console.warn("Aucune information d'agent trouvée.");
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des informations de l'agent :", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAgentInfo();
+  }, []);
+
+  if (!fontsLoaded || isLoading) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setActiveComponent(null)}
-        >
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <View style={styles.componentContainer}>{renderActiveComponent()}</View>
+        <Text style={styles.loadingText}>Chargement...</Text>
       </View>
     );
   }
 
-  // Affichage initial avec les boutons centrés
   return (
     <View style={styles.container}>
-      <View style={styles.centeredContent}>
-        {/* Logo Pmove Pro */}
+      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'flex-start', marginTop: 20 }}>
         <Image
           source={require("../assets/PMoveLogoAvecStyle.png")}
           style={styles.logo}
         />
-        <Text style={styles.welcomeText}>Bon retour parmi nous !</Text>
+      </Animated.View>
 
-        <View style={styles.buttonsContainer}>
-          {/* Bouton pour accéder à la recherche de trajets */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Research")}
-          >
-            <Icon name="search" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>
-              Recherche de trajets pour gérer un PMR
-            </Text>
-          </TouchableOpacity>
-          {/* Bouton pour accéder au scanner de QR Code */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleAlert(
-              "Il est recommandé de rechercher le trajet associé au PMR avant de scanner le QR Code du PMR.", setActiveComponent("ScannerQRCode"))}
-          >
-            <Icon name="qrcode" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>
-              Scanner le QR Code PAX du PMR
-            </Text>
-          </TouchableOpacity>
-          {/* Bouton pour accéder au profil */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Profile")} // Redirection vers la page Profile
-          >
-            <Icon name="user" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Accéder à mon profil</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <Animated.Text style={[styles.welcomeText, { opacity: fadeAnim }]}>
+          Bonjour, {agentInfo.name} {agentInfo.surname} !
+        </Animated.Text>
+      </TouchableOpacity>
+
+      {/* Animation Lottie au milieu */}
+      <Animated.View style={{ opacity: fadeAnim, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <LottieView
+          source={require("../assets/home.json")} // Chemin vers votre fichier Lottie
+          autoPlay
+          loop
+          style={styles.lottieAnimation}
+        />
+      </Animated.View>
+
+      {/* Bouton en bas */}
+      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'center', marginBottom: 20 }}>
+        <TouchableOpacity
+          style={styles.mainButton}
+          onPress={() => navigation.navigate("Research")}
+        >
+          <Icon name="search" size={24} color="#FFFFFF" style={styles.icon} />
+          <Text style={styles.mainButtonText}>Trouver un PMR à proximité</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
+    justifyContent: "flex-start",
+    alignItems: "center",
     padding: 16,
   },
-  centeredContent: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   logo: {
-    width: 300, // Largeur de l'image
-    height: 300, // Hauteur de l'image
-    resizeMode: "contain", // Ajuste l'image pour qu'elle soit bien contenue
-    marginBottom: -30, // Espacement sous l'image
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   welcomeText: {
     fontSize: 24,
-    fontFamily: "RalewayBold",
+    fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 32,
+    marginBottom: 40,
     textAlign: "center",
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
-  buttonsContainer: {
-    flexDirection: "column",
-  },
-  button: {
+  mainButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#EF4D20",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    width: 300,
+    padding: 16,
+    borderRadius: 12,
+    width: "80%",
+    justifyContent: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
-  buttonText: {
+  mainButtonText: {
     color: "#FFFFFF",
-    fontFamily: "RalewayExtraBold",
-    fontSize: 16,
-    textAlign: "center",
-    flex: 1,
+    fontSize: 18,
+    marginLeft: 10,
+    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   icon: {
     marginRight: 10,
   },
-  componentContainer: {
-    flex: 1,
-    marginTop: 16,
+  loadingText: {
+    fontSize: 20,
+    color: "#EF4D20",
+    fontWeight: "bold",
+    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
-  backButton: {
-    position: "absolute",
-    bottom: 7,
-    left: 25,
-    backgroundColor: "#EF4D20",
-    padding: 12,
-    borderRadius: 50,
-    elevation: 5,
-    zIndex: 9999,
+  lottieAnimation: {
+    width: 300, // Ajustez la taille selon vos besoins
+    height: 300,
   },
 });
