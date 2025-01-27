@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Research from "./Research";
 import ScannerQRCode from "./ScannerQRCode";
 import AssistanceForm from "./AssistanceForm";
+import Profile from "./Profile";
 
 
 import {
@@ -30,12 +31,14 @@ export default function Home() {
         return <ScannerQRCode />;
         case "AssistanceForm":
         return <AssistanceForm />;
+      case "Profile":
+        return <Profile />;
       default:
         return null;
     }
   };
 
-  const [fontsLoaded] = useFonts({
+  useFonts({
     Raleway_100Thin,
     Raleway_200ExtraLight,
     Raleway_300Light,
@@ -47,35 +50,19 @@ export default function Home() {
     RalewayBlack: Raleway_900Black,
   });
 
-  const handleAlert = (message, component) => {
-    Alert.alert(
-      "Recommandation",
-      message,
-      [
-        {
-          text: "Annuler",
-          onPress: () => setActiveComponent(component),
-          style: "default",
-        },
-        {
-          text: "Continuer",
-          style: "cancel",
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  // Si un composant est actif, afficher uniquement ce composant avec une icône pour revenir en arrière
+  // Si un composant est actif, afficher uniquement ce composant
   if (activeComponent) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setActiveComponent(null)}
-        >
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+        {/* Ne pas afficher le bouton retour pour le composant Profile */}
+        {activeComponent !== "Profile" && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setActiveComponent(null)}
+          >
+            <Icon name="arrow-left" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        )}
         <View style={styles.componentContainer}>{renderActiveComponent()}</View>
       </View>
     );
@@ -103,26 +90,13 @@ export default function Home() {
               Recherche de trajets pour gérer un PMR
             </Text>
           </TouchableOpacity>
-          {/* Bouton pour accéder au scanner de QR Code */}
+          {/* Bouton pour accéder au profil */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handleAlert(
-              "Il est recommandé de rechercher le trajet associé au PMR avant de scanner le QR Code du PMR.", setActiveComponent("ScannerQRCode"))}
+            onPress={() => setActiveComponent("Profile")}
           >
-            <Icon name="qrcode" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>
-              Scanner le QR Code PAX du PMR
-            </Text>
-          </TouchableOpacity>
-          {/* Bouton pour accéder au formulaire d'assistance */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleAlert(
-              "Il est recommandé de rechercher le trajet associé au PMR avant de remplir son formulaire d'assistance.", setActiveComponent("AssistanceForm"))}
-          >
-            <Icon name="edit" size={20} color="#FFFFFF" style={styles.icon} />
-            <Text style={styles.buttonText}>Remplir le formulaire d'assistance
-            </Text>
+            <Icon name="user" size={20} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.buttonText}>Profil</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -183,7 +157,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    bottom: 7,
+    bottom: 5,
     left: 25,
     backgroundColor: "#EF4D20",
     padding: 12,

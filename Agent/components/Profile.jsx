@@ -33,7 +33,7 @@ export default function Profile() {
     const loadUserInfo = async () => {
       try {
         const user = await AsyncStorage.getItem("user");
-        const storedFontSize = await AsyncStorage.getItem("fontSize");
+        // const storedFontSize = await AsyncStorage.getItem("fontSize");
 
         console.log("Données récupérées depuis AsyncStorage :", JSON.parse(user)); // Log pour vérifier
   
@@ -68,7 +68,7 @@ export default function Profile() {
       <View style={styles.profile}>
         {/* Animation JSON pour l'avatar */}
         <LottieView
-          source={require("../assets/icon_user_agent.json")} // Chemin vers l'animation JSON
+          source={require("../assets/profile_agent_icon.json")} // Chemin vers l'animation JSON
           autoPlay
           loop
           style={styles.animation}
@@ -77,8 +77,8 @@ export default function Profile() {
           <Text style={styles.profileName}>
             {userInfo.name} {userInfo.surname}
           </Text>
-          <Text style={styles.profileId}>Agent ID: {userInfo.agentId}</Text>
-          <Text style={styles.profileAffiliation}>
+          <Text style={styles.profileId}>Agent ID: {userInfo.agentId || "Non trouvé"}</Text>
+          <Text style={styles.profileAffiliation || "Non trouvé"}>
             Affiliation : {userInfo.affiliation || "Non spécifiée"}
           </Text>
         </View>
@@ -90,7 +90,7 @@ export default function Profile() {
 
           {/* Dark Mode */}
           <View style={styles.row}>
-            <View style={[styles.rowIcon, { backgroundColor: "#007afe" }]}>
+            <View style={[styles.rowIcon, { backgroundColor: "#EF4D20" }]}>
               <FeatherIcon color="#fff" name="moon" size={20} />
             </View>
             <Text style={styles.rowLabel}>Mode sombre</Text>
@@ -103,7 +103,7 @@ export default function Profile() {
 
           {/* Email Notifications */}
           <View style={styles.row}>
-            <View style={[styles.rowIcon, { backgroundColor: "#38C959" }]}>
+            <View style={[styles.rowIcon, { backgroundColor: "#EF4D20" }]}>
               <FeatherIcon color="#fff" name="at-sign" size={20} />
             </View>
             <Text style={styles.rowLabel}>Notifications par email</Text>
@@ -118,7 +118,7 @@ export default function Profile() {
 
           {/* Push Notifications */}
           <View style={styles.row}>
-            <View style={[styles.rowIcon, { backgroundColor: "#38C959" }]}>
+            <View style={[styles.rowIcon, { backgroundColor: "#EF4D20" }]}>
               <FeatherIcon color="#fff" name="bell" size={20} />
             </View>
             <Text style={styles.rowLabel}>Notifications push</Text>
@@ -130,13 +130,20 @@ export default function Profile() {
               value={form.pushNotifications}
             />
           </View>
+          <TouchableOpacity style={styles.row} onPress={handleLogout}>
+        <View style={[styles.rowIcon, { backgroundColor: "#EF4D20" }]}>
+          <FeatherIcon color="#fff" name="log-out" size={20} />
+        </View>
+        <Text style={[styles.rowLabel, { color: "#4c4c4c" }]}>Déconnexion</Text>
+        <View style={styles.rowSpacer} />
+      </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Bouton de déconnexion */}
+      {/* Bouton de déconnexion
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Déconnexion</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 }
@@ -144,9 +151,11 @@ export default function Profile() {
 const styles = StyleSheet.create({
   lightContainer: {
     backgroundColor: "#FFF6F1",
+    flex: 1,
   },
   darkContainer: {
     backgroundColor: "#333",
+    flex: 1,
   },
   profile: {
     padding: 24,
@@ -155,8 +164,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   animation: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
   profileName: {
     marginTop: 20,
@@ -180,6 +190,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 24,
+    flex: 1,
   },
   sectionTitle: {
     paddingVertical: 12,
@@ -198,6 +209,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#EF4D20",
   },
   rowIcon: {
     width: 32,
@@ -209,27 +222,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rowLabel: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     color: "#4c4c4c",
     flex: 1,
   },
   rowSpacer: {
     flex: 1,
-  },
-  logoutButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#ff0000",
-  },
-  logoutButtonText: {
-    color: "#ff0000",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

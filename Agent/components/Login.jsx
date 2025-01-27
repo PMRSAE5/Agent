@@ -70,7 +70,7 @@ export default function Login({ navigation, onLoginSuccess }) {
     // Vérifiez les valeurs avant d'envoyer la requête
     console.log("Nom d'utilisateur : ", name);
     console.log("Mot de passe : ", password);
-    console.log("Connecting to: http://172.20.10.11:3000");
+    console.log("Connecting to: http://172.20.10.5:3000");
 
     try {
       // Vérifiez si les champs sont remplis avant d'envoyer la requête
@@ -79,21 +79,33 @@ export default function Login({ navigation, onLoginSuccess }) {
         return;
       }
 
-      const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
+      const response = await axios.post('http://172.20.10.5:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
 
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://172.20.10.5:3000/ag/agentId/${name}`);
+        console.log("Agent ID response:", agentIdResponse.data)
+
+        if (!agentIdResponse.data || agentIdResponse.data.length === 0) {
+          throw new Error("Aucun ID d'agent trouvé dans la réponse de l'API.");
+        }  
+
         const agentId = agentIdResponse.data[0].ID_Agent; // Extraire l'ID de l'agent
+        if (!agentId) {
+          throw new Error("Propriété 'ID_Agent' manquante dans la réponse de l'API.");
+        }
         console.log("Agent ID response:", agentIdResponse.data);
+
+        // Extraire toutes les informations de l'agent
+        const { surname, affiliation } = response.data.agent;
 
         // Toujours enregistrer l'ID de l'agent
         await AsyncStorage.setItem('agentId', JSON.stringify({ agentId }));
 
         if (stayLoggedIn) {
           // Enregistrer les infos de l'utilisateur dans AsyncStorage si "rester connecté" est coché
-          await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId }));
+          await AsyncStorage.setItem('user', JSON.stringify({ name, password, agentId, surname, affiliation }));
         } else {
           await AsyncStorage.removeItem('user');
         }
@@ -144,7 +156,7 @@ export default function Login({ navigation, onLoginSuccess }) {
           <TouchableOpacity onPress={() => setStayLoggedIn(!stayLoggedIn)}>
             <Text style={styles.checkbox}>{stayLoggedIn ? "☑" : "☐"}</Text>
           </TouchableOpacity>
-          <Text style={styles.label}>Rester connecté</Text>
+          <Text style={styles.label}>Rester connecté (obligatoire !)</Text>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
           </TouchableOpacity>
@@ -206,10 +218,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   checkboxSection: {
-    flexDirection: "row", // Alignement horizontal
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column", // Alignement horizontal
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     marginBottom: 20,
+    paddingHorizontal: 10,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -222,14 +235,15 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#555",
+    color: "#FF000",
+    flex: 1,
+    flexWrap: "wrap",
   },
   forgotPassword: {
     fontSize: 14,
-    color: "#EF4D20", // Couleur du texte
+    color: "#FF000", // Couleur du texte
     textDecorationLine: "underline",
-    marginLeft: 15,
-    marginBottom: 0,
+    marginTop: 10,
   },
   buttonPrimary: {
     backgroundColor: "#EF4D20", // Couleur du bouton
