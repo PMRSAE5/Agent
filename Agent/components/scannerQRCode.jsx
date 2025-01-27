@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Camera, CameraView } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
-import { useFonts, Raleway_400Regular, Raleway_700Bold } from "@expo-google-fonts/raleway";
 
 export default function ScannerQRCode() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -20,11 +19,6 @@ export default function ScannerQRCode() {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const [text, setText] = useState("Aucun QR Code scanné pour l'instant.");
-
-  let [fontsLoaded] = useFonts({
-    Raleway_400Regular,
-    Raleway_700Bold,
-  });
 
   // Demande de permission pour la caméra
   const askForCameraPermission = () => {
@@ -83,7 +77,7 @@ export default function ScannerQRCode() {
     try {
       navigation.navigate("StartAssistance2", { qrData });
     } catch (error) {
-      Alert.alert("Erreur", "L'écran 'StartAssistance2' est introuvable.");
+      Alert.alert("Erreur", "L'écran 'scannerQRCodeBaggage' est introuvable.");
     }
   };
 
@@ -91,25 +85,17 @@ export default function ScannerQRCode() {
     setModalVisible(false);
   };
 
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.container}>
-        <Text>Chargement des polices...</Text>
-      </View>
-    );
-  }
-
   if (hasPermission === null) {
     return (
       <View style={styles.container}>
-        <Text style={{ fontFamily: "Raleway_400Regular" }}>Demande de permission pour la caméra...</Text>
+        <Text>Demande de permission pour la caméra...</Text>
       </View>
     );
   }
   if (hasPermission === false) {
     return (
       <View style={styles.container}>
-        <Text style={{ margin: 10, fontFamily: "Raleway_400Regular" }}>Accès à la caméra refusé</Text>
+        <Text style={{ margin: 10 }}>Accès à la caméra refusé</Text>
         <TouchableOpacity onPress={askForCameraPermission} style={styles.permissionButton}>
           <Text style={styles.permissionButtonText}>Autoriser la caméra</Text>
         </TouchableOpacity>
@@ -133,7 +119,9 @@ export default function ScannerQRCode() {
         </View>
       </CameraView>
 
-      <Text style={styles.resultText}>{text}</Text>
+      <Text style={styles.resultText}>
+        <Text style={styles.boldLargeText}>{text}</Text>
+      </Text>
 
       {scanned && (
         <TouchableOpacity style={styles.scanAgainButton} onPress={() => setScanned(false)}>
@@ -186,23 +174,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
+    justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    justifyContent: 'center', // Ajout pour centrage vertical
+    marginTop: 50, // Espace en haut
+    marginBottom: 50, // Espace en bas
   },
   title: {
-    fontSize: 20, // Réduit la taille
+    fontSize: 24,
     fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 10, // Marge réduite
+    marginBottom: 20,
     textAlign: "center",
-    paddingHorizontal: 10, // Empêche le débordement
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
   camera: {
-    width: "100%",
-    height: '40%', // Hauteur relative au lieu de flex:1
-    marginVertical: 10, // Espacement ajusté
+    width: "80%", // Réduire la largeur de la caméra
+    aspectRatio: 1, // Garder un ratio carré
+    alignItems: "center",
+    justifyContent: "center",
   },
   overlay: {
     position: "absolute",
@@ -214,18 +203,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rectangle: {
-    width: 200,
-    height: 200,
+    width: 250, // Augmenter la largeur du carré
+    height: 250, // Augmenter la hauteur du carré
     borderWidth: 4,
     borderColor: "#EF4D20",
     borderRadius: 10,
   },
   resultText: {
-    fontSize: 18,
+    fontSize: 14, // Réduire la taille du texte
     color: "#333",
     textAlign: "center",
     marginVertical: 20,
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
+  },
+  boldLargeText: {
+    fontSize: 18, // Taille du texte plus grande
+    fontWeight: "bold", // Texte en gras
+    color: "#333", // Couleur du texte
   },
   scanAgainButton: {
     backgroundColor: "#EF4D20",
@@ -239,7 +232,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   permissionButton: {
     backgroundColor: "#EF4D20",
@@ -250,7 +242,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   modalOverlay: {
     flex: 1,
@@ -270,18 +261,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 20,
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
   },
   modalContent: {
     marginBottom: 20,
     textAlign: "center",
   },
   modalText: {
-    fontSize: 18,
+    fontSize: 16, // Réduire la taille du texte
     color: "#333",
     marginBottom: 10,
     textAlign: "center",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   confirmButton: {
     backgroundColor: "#32CD32",
@@ -295,7 +284,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
   cancelButton: {
     backgroundColor: "#FF0000",
@@ -308,6 +296,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
   },
 });

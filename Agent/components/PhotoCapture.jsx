@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts, Raleway_400Regular, Raleway_700Bold } from '@expo-google-fonts/raleway';
@@ -11,6 +11,7 @@ const PhotoCapture = () => {
   });
   const [selectedType, setSelectedType] = useState('person');
   const [isVerified, setIsVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   let [fontsLoaded] = useFonts({
@@ -57,7 +58,28 @@ const PhotoCapture = () => {
     return null;
   };
 
-  const toggleVerification = () => setIsVerified(!isVerified);
+  const toggleVerification = () => {
+    Alert.alert(
+      "Confirmation",
+      "Êtes-vous sûr de votre choix ?",
+      [
+        {
+          text: "Annuler",
+          style: "cancel"
+        },
+        { 
+          text: "Oui", 
+          onPress: () => {
+            setIsLoading(true);
+            setTimeout(() => {
+              setIsVerified(true);
+              setIsLoading(false);
+            }, 3000); // 3 secondes de délai
+          }
+        }
+      ]
+    );
+  };
 
   const goToNext = () => navigation.navigate('StartAssistance4');
 
@@ -79,7 +101,6 @@ const PhotoCapture = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Message d'avertissement déplacé ici */}
       {getMissingPhotoMessage() && (
         <Text style={styles.warningText}>{getMissingPhotoMessage()}</Text>
       )}
@@ -93,11 +114,13 @@ const PhotoCapture = () => {
                 style={styles.previewImage} 
                 resizeMode="contain"
               />
-              <TouchableOpacity
-                style={styles.retakeButton}
-                onPress={() => takePhoto(selectedType)}>
-                <Text style={styles.retakeText}>Reprendre</Text>
-              </TouchableOpacity>
+              {!isVerified && (
+                <TouchableOpacity
+                  style={styles.retakeButton}
+                  onPress={() => takePhoto(selectedType)}>
+                  <Text style={styles.retakeText}>Reprendre</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         ) : (
@@ -109,13 +132,12 @@ const PhotoCapture = () => {
                   : 'Cadrez la pièce d\'identité'}
               </Text>
 
-              {/* Ajout du message d'avertissement pour le portrait */}
               {selectedType === 'person' && !photos.person && (
                 <Text style={styles.privacyWarning}>
                     ⚠️ Attention : Conformément à notre politique de confidentialité,{'\n'} 
                     l'image du PMR ne sera pas conservée après traitement de la demande.
                 </Text>
-                )}
+              )}
 
               <View style={styles.overlay}>
                 <View style={styles.guidelineHorizontal} />
@@ -137,30 +159,37 @@ const PhotoCapture = () => {
 
       {photos.person && photos.idCard && (
         <View style={styles.verificationSection}>
-          <TouchableOpacity 
-            style={[styles.checkboxContainer, isVerified && styles.checkedContainer]} 
-            onPress={toggleVerification}
-            activeOpacity={0.7}>
-            <View style={[styles.checkbox, isVerified && styles.checked]} />
-            <Text style={styles.checkboxText}>Je certifie l'authenticité des documents et de l'identité client.</Text>
-          </TouchableOpacity>
+          {!isVerified ? (
+            <TouchableOpacity 
+              style={[styles.checkboxContainer, isVerified && styles.checkedContainer]} 
+              onPress={toggleVerification}
+              activeOpacity={0.7}>
+              <View style={[styles.checkbox, isVerified && styles.checked]} />
+              <Text style={styles.checkboxText}>Je certifie l'authenticité des documents et de l'identité client.</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.validationContainer}>
+              <View style={styles.validationIcon}>
+                <Text style={styles.validationCheck}>✓</Text>
+              </View>
+              <Text style={styles.validationText}>Identité validée</Text>
+            </View>
+          )}
 
           {isVerified && (
-            <>
-              <View style={styles.validationContainer}>
-                <View style={styles.validationIcon}>
-                  <Text style={styles.validationCheck}>✓</Text>
-                </View>
-                <Text style={styles.validationText}>Identité validée</Text>
-              </View>
+            <TouchableOpacity 
+              style={styles.nextButton} 
+              onPress={goToNext}
+              activeOpacity={0.7}>
+              <Text style={styles.nextButtonText}>Valider et continuer</Text>
+            </TouchableOpacity>
+          )}
 
-              <TouchableOpacity 
-                style={styles.nextButton} 
-                onPress={goToNext}
-                activeOpacity={0.7}>
-                <Text style={styles.nextButtonText}>Valider et continuer</Text>
-              </TouchableOpacity>
-            </>
+          {isLoading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#EF4D20" />
+              <Text style={styles.loadingText}>Validation en cours...</Text>
+            </View>
           )}
         </View>
       )}
@@ -174,19 +203,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF6F1',
     padding: 20,
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop : 40,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#EF4D20',
     textAlign: 'center',
-    marginVertical: 20,
-    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+    marginTop: 10,
+    marginBottom: 20,
+    fontFamily: 'Raleway_700Bold',
   },
   selectorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   typeButton: {
     padding: 12,
@@ -200,26 +232,26 @@ const styles = StyleSheet.create({
   typeButtonText: {
     color: '#333',
     fontWeight: '500',
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   activeTypeText: {
     color: '#FFF',
   },
   photoContainer: {
-    flex: 1,
     width: '100%',
     alignItems: 'center',
+    marginTop: 10,
   },
   idFrame: {
     width: 250,
-    height: 350,
+    height: 250,
     borderWidth: 2,
     borderColor: '#EF4D20',
     borderRadius: 4,
     backgroundColor: '#fff',
     overflow: 'hidden',
     position: 'relative',
-    marginVertical: 15,
+    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -229,7 +261,7 @@ const styles = StyleSheet.create({
   },
   helperText: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 10,
     color: '#EF4D20',
     fontSize: 14,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -237,7 +269,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     textAlign: 'center',
     width: '80%',
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   captureButton: {
     backgroundColor: '#EF4D20',
@@ -245,18 +277,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: '80%',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
-    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+    fontFamily: 'Raleway_700Bold',
   },
   verificationSection: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -287,10 +319,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     flex: 1,
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   nextButton: {
-    backgroundColor: '#EF4D20', // Changé depuis '#2196F3'
+    backgroundColor: '#EF4D20',
     padding: 15,
     borderRadius: 8,
     width: '90%',
@@ -301,7 +333,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
-    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+    fontFamily: 'Raleway_700Bold',
   },
   retakeButton: {
     position: 'absolute',
@@ -314,7 +346,7 @@ const styles = StyleSheet.create({
   retakeText: {
     color: 'white',
     fontSize: 12,
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   validationContainer: {
     alignItems: 'center',
@@ -338,26 +370,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#4CAF50',
     fontWeight: 'bold',
-    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+    fontFamily: 'Raleway_700Bold',
   },
   warningText: {
     color: '#EF4D20',
     fontSize: 16,
     textAlign: 'center',
     marginTop: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     width: '100%',
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   previewWrapper: {
     alignItems: 'center',
   },
   privacyWarning: {
     position: 'absolute',
-    top: '50%', // Centre verticalement
+    top: '50%',
     left: 0,
     right: 0,
-    transform: [{ translateY: -50 }], // Ajustement précis du centrage
+    transform: [{ translateY: -50 }],
     color: '#EF4D20',
     fontSize: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -366,13 +398,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 20,
     lineHeight: 16,
-    fontFamily: 'Raleway_400Regular', // Appliquer la police Raleway
+    fontFamily: 'Raleway_400Regular',
   },
   loadingText: {
     fontSize: 20,
     color: '#EF4D20',
     fontWeight: 'bold',
-    fontFamily: 'Raleway_700Bold', // Appliquer la police Raleway
+    fontFamily: 'Raleway_700Bold',
+  },
+  loadingContainer: {
+    marginTop: 20,
+    alignItems: 'center',
   },
 });
 

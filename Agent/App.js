@@ -40,8 +40,7 @@ export default function App() {
   }, []);
 
   // Empêche l'accès à la `NavBar` si l'utilisateur n'est pas connecté
-  const shouldDisplayNavBar = isLoggedIn && currentScreen !== "Login";
-
+  const shouldDisplayNavBar = isLoggedIn && currentScreen !== "Login" && currentScreen !== "SplashScreen";
   return (
     <ThemeProvider>
       <NavigationContainer

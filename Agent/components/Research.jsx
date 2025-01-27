@@ -38,7 +38,7 @@ export default function Research() {
   const handleSearch = async (query) => {
     try {
       const response = await fetch(
-        `http://172.20.10.5:3000/reservation/getByPoint?pmr_point_id=${query}`
+        `http://172.20.10.11:3000/reservation/getByPoint?pmr_point_id=${query}`
       );
       const data = await response.json();
 
@@ -68,7 +68,7 @@ export default function Research() {
   const handleAccept = async (reservationId) => {
     try {
       const response = await fetch(
-        `http://172.20.10.5:3000/reservation/getById?id=${reservationId}`
+        `http://172.20.10.11:3000/reservation/getById?id=${reservationId}`
       );
 
       if (!response.ok) {
@@ -201,13 +201,11 @@ export default function Research() {
     </KeyboardAvoidingView>
   );
 }
-
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
-    paddingTop: 80,
+    alignItems: "center", // Centrer le contenu horizontalement
   },
   roleSelectionContainer: {
     flex: 1,
@@ -220,7 +218,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 20,
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   roleButton: {
     backgroundColor: "#FFFFFF",
@@ -239,14 +237,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   searchContainer: {
-    width: "80%",
+    width: "80%", // Largeur de la barre de recherche
     padding: 16,
     backgroundColor: "#FFF6F1",
     borderBottomWidth: 1,
     borderBottomColor: "#EF4D20",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    alignSelf: "center",
+    marginTop : 40, // Centrer la barre de recherche horizontalement
   },
   input: {
     width: "100%",
@@ -258,7 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     fontSize: 16,
     color: "#000",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
+    fontFamily: "Raleway_400Regular",
   },
   resultItem: {
     backgroundColor: "#FFFFFF",
@@ -276,13 +275,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     textAlign: "center",
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   resultSubtitle: {
     fontSize: 14,
     color: "#555",
     textAlign: "center",
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
+    fontFamily: "Raleway_400Regular",
   },
   trajetContainer: {
     marginTop: 10,
@@ -316,13 +315,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#EF4D20",
     marginBottom: 16,
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   detailText: {
     fontSize: 16,
     color: "#333",
     marginBottom: 8,
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
+    fontFamily: "Raleway_400Regular",
   },
   buttonClose: {
     backgroundColor: "#EF4D20",
@@ -335,12 +334,12 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   loadingText: {
     fontSize: 20,
     color: "#EF4D20",
     fontWeight: "bold",
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
 });

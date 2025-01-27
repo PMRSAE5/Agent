@@ -59,13 +59,15 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'flex-start', marginTop: 20 }}>
+      {/* Logo en haut */}
+      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'center', marginTop: 10 }}>
         <Image
-          source={require("../assets/PMoveLogoAvecStyle.png")}
+          source={require("../assets/PMoveLogoAvecStyle2.png")}
           style={styles.logo}
         />
       </Animated.View>
 
+      {/* Message de bienvenue */}
       <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
         <Animated.Text style={[styles.welcomeText, { opacity: fadeAnim }]}>
           Bonjour, {agentInfo.name} {agentInfo.surname} !
@@ -73,7 +75,7 @@ export default function Home() {
       </TouchableOpacity>
 
       {/* Animation Lottie au milieu */}
-      <Animated.View style={{ opacity: fadeAnim, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Animated.View style={{ opacity: fadeAnim, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
         <LottieView
           source={require("../assets/home.json")} // Chemin vers votre fichier Lottie
           autoPlay
@@ -82,8 +84,8 @@ export default function Home() {
         />
       </Animated.View>
 
-      {/* Bouton en bas */}
-      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'center', marginBottom: 20 }}>
+      {/* Bouton en bas, juste en dessous de l'animation Lottie */}
+      <Animated.View style={{ opacity: fadeAnim, alignSelf: 'center', marginTop: 10 }}>
         <TouchableOpacity
           style={styles.mainButton}
           onPress={() => navigation.navigate("Research")}
@@ -100,30 +102,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF6F1",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    justifyContent: "flex-start", // Aligner le contenu en haut
+    alignItems: "center", // Centrer horizontalement
     padding: 16,
+    paddingBottom: 100, // Ajouter un padding en bas pour éviter que la NavBar ne cache le contenu
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 200, // Taille d'origine du logo
+    height: 200,
     resizeMode: "contain",
+    marginBottom: 5, // Espacement réduit après le logo
   },
   welcomeText: {
-    fontSize: 24,
+    fontSize: 24, // Taille d'origine du texte
     fontWeight: "bold",
     color: "#EF4D20",
-    marginBottom: 40,
+    marginBottom: 5, // Espacement réduit après le texte
     textAlign: "center",
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   mainButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#EF4D20",
-    padding: 16,
+    padding: 16, // Padding d'origine
     borderRadius: 12,
-    width: "80%",
+    width: 300, // Largeur fixe pour le bouton
     justifyContent: "center",
     elevation: 5,
     shadowColor: "#000",
@@ -133,9 +137,9 @@ const styles = StyleSheet.create({
   },
   mainButtonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 18, // Taille d'origine du texte
     marginLeft: 10,
-    fontFamily: "Raleway_400Regular", // Appliquer la police Raleway
+    fontFamily: "Raleway_400Regular",
   },
   icon: {
     marginRight: 10,
@@ -144,10 +148,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#EF4D20",
     fontWeight: "bold",
-    fontFamily: "Raleway_700Bold", // Appliquer la police Raleway
+    fontFamily: "Raleway_700Bold",
   },
   lottieAnimation: {
-    width: 300, // Ajustez la taille selon vos besoins
-    height: 300,
+    width: 350, // Taille légèrement réduite de l'animation
+    height: 350,
   },
 });

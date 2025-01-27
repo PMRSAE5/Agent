@@ -64,7 +64,7 @@ export default function Login({ navigation, onLoginSuccess }) {
     // Vérifiez les valeurs avant d'envoyer la requête
     console.log("Nom d'utilisateur : ", name);
     console.log("Mot de passe : ", password);
-    console.log("Connecting to: http://172.20.10.5:3000");
+    console.log("Connecting to: http://172.20.10.11:3000");
 
     try {
       if (!name || !password) {
@@ -72,12 +72,12 @@ export default function Login({ navigation, onLoginSuccess }) {
         return;
       }
 
-      const response = await axios.post('http://172.20.10.5:3000/ag/login', { name, password });
+      const response = await axios.post('http://172.20.10.11:3000/ag/login', { name, password });
       console.log("Response from login:", response.data);
 
       if (response.status === 200) {
         // Récupérer l'ID de l'agent
-        const agentIdResponse = await axios.get(`http://172.20.10.5:3000/ag/agentId/${name}`);
+        const agentIdResponse = await axios.get(`http://172.20.10.11:3000/ag/agentId/${name}`);
         console.log("Agent ID response:", agentIdResponse.data)
 
         if (!agentIdResponse.data || agentIdResponse.data.length === 0) {

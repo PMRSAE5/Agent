@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   TextInput,
   Animated,
-  Easing,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons"; // Pour les icônes
@@ -25,19 +24,25 @@ const AssistanceForm = () => {
   const [isFeedbackPositive, setIsFeedbackPositive] = useState(null); // Feedback positif ou négatif
   const [feedbackDetails, setFeedbackDetails] = useState(""); // Détails du feedback
   const [errors, setErrors] = useState({}); // Erreurs de validation
-  
+
   const errorAnim = new Animated.Value(0); // Animation pour les erreurs
 
   // Fonction pour valider les champs obligatoires
   const validateFields = () => {
     const newErrors = {};
 
-    if (!isLuggageDeposited) newErrors.isLuggageDeposited = "Champ obligatoire";
-    if (!isPmrSeated) newErrors.isPmrSeated = "Champ obligatoire";
-    if (hasSpecificNeeds === null) newErrors.hasSpecificNeeds = "Champ obligatoire";
-    if (hasSpecificNeeds === true && !specificNeeds.trim()) newErrors.specificNeeds = "Champ obligatoire";
-    if (hasSpecificNeeds === true && !isStaffInformed) newErrors.isStaffInformed = "Champ obligatoire";
-    if (isFeedbackPositive === null) newErrors.isFeedbackPositive = "Champ obligatoire";
+    if (!isLuggageDeposited)
+      newErrors.isLuggageDeposited = "Champ obligatoire";
+    if (!isPmrSeated)
+      newErrors.isPmrSeated = "Champ obligatoire";
+    if (hasSpecificNeeds === null)
+      newErrors.hasSpecificNeeds = "Champ obligatoire";
+    if (hasSpecificNeeds === true && !specificNeeds.trim())
+      newErrors.specificNeeds = "Champ obligatoire";
+    if (hasSpecificNeeds === true && !isStaffInformed)
+      newErrors.isStaffInformed = "Champ obligatoire";
+    if (isFeedbackPositive === null)
+      newErrors.isFeedbackPositive = "Champ obligatoire";
 
     setErrors(newErrors);
 
@@ -80,6 +85,7 @@ const AssistanceForm = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Validation de l'accompagnement</Text>
 
+        {/* Champ : Bagages déposés */}
         <TouchableOpacity
           style={styles.checkboxContainer}
           onPress={() => setIsLuggageDeposited(!isLuggageDeposited)}
@@ -92,13 +98,12 @@ const AssistanceForm = () => {
           <Text style={styles.label}>Les bagages ont été déposés aux emplacements prévus.</Text>
         </TouchableOpacity>
         {errors.isLuggageDeposited && (
-          <Animated.Text
-            style={[styles.errorText, { opacity: errorAnim }]}
-          >
+          <Animated.Text style={[styles.errorText, { opacity: errorAnim }]}>
             {errors.isLuggageDeposited}
           </Animated.Text>
         )}
 
+        {/* Champ : PMR installé */}
         <TouchableOpacity
           style={styles.checkboxContainer}
           onPress={() => setIsPmrSeated(!isPmrSeated)}
@@ -111,9 +116,7 @@ const AssistanceForm = () => {
           <Text style={styles.label}>Le PMR a été accompagné jusqu'à sa place.</Text>
         </TouchableOpacity>
         {errors.isPmrSeated && (
-          <Animated.Text
-            style={[styles.errorText, { opacity: errorAnim }]}
-          >
+          <Animated.Text style={[styles.errorText, { opacity: errorAnim }]}>
             {errors.isPmrSeated}
           </Animated.Text>
         )}
@@ -123,6 +126,7 @@ const AssistanceForm = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Besoins spécifiques</Text>
 
+        {/* Champ : Besoins spécifiques */}
         <Text style={styles.label}>Le PMR avait-il des besoins spécifiques ?</Text>
         <View style={styles.yesNoContainer}>
           <TouchableOpacity
@@ -140,6 +144,7 @@ const AssistanceForm = () => {
         </View>
         {errors.hasSpecificNeeds && <Text style={styles.errorText}>{errors.hasSpecificNeeds}</Text>}
 
+        {/* Champ : Détails des besoins spécifiques */}
         {hasSpecificNeeds === true && (
           <>
             <Text style={styles.label}>Détails des besoins spécifiques :</Text>
@@ -153,6 +158,7 @@ const AssistanceForm = () => {
             />
             {errors.specificNeeds && <Text style={styles.errorText}>{errors.specificNeeds}</Text>}
 
+            {/* Champ : Personnel informé */}
             <View style={styles.checkboxContainer}>
               <TouchableOpacity
                 style={[styles.checkbox, isStaffInformed && styles.checked]}
@@ -169,6 +175,7 @@ const AssistanceForm = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Feedback</Text>
 
+        {/* Champ : Feedback positif ou négatif */}
         <Text style={styles.label}>L'accompagnement s'est-il bien déroulé ?</Text>
         <View style={styles.yesNoContainer}>
           <TouchableOpacity
@@ -186,6 +193,7 @@ const AssistanceForm = () => {
         </View>
         {errors.isFeedbackPositive && <Text style={styles.errorText}>{errors.isFeedbackPositive}</Text>}
 
+        {/* Champ : Détails du feedback */}
         {isFeedbackPositive === false && (
           <>
             <Text style={styles.label}>Détails du feedback :</Text>
@@ -210,6 +218,7 @@ const AssistanceForm = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -217,6 +226,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFF6F1",
     padding: 24,
+    paddingTop: 60, // Pour éviter que le formulaire soit caché par la navbar
   },
   title: {
     fontSize: 26,
@@ -268,7 +278,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     flex: 1,
     alignItems: "center",
-    flexDirection: "row",
     justifyContent: "center",
   },
   selectedButton: {
