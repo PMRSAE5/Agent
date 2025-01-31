@@ -15,7 +15,6 @@ Cette application va être utiilisé pour les Agents en gare. Elle est exclusive
 - React
 - React Native
 
-
 ## **Démarrer l'application**
 
 1. Installer les dépendances

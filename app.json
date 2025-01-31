@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "PMove Pro",
+    "slug": "Agent",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/PMoveLogoSANSTITRE.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/PMoveLogoSANSTITRE.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cette application nécessite l'accès à la caméra pour scanner les QR codes.",
+        "NSPhotoLibraryAddUsageDescription": "Nous avons besoin de votre permission pour enregistrer des photos."
+      }
+    },
+    "android": {
+      "permissions": [
+        "CAMERA"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-font"]
+  }
+}
