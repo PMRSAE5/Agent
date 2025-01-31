@@ -1,7 +1,6 @@
 # Agent
 
-## Description
-Cette application va être utiilisé pour les Agents en gare. Elle est exclusivement utilisé en mobile. 
+##### Cette application va être utiilisé pour les Agents en gare. Elle est exclusivement utilisé en mobile. 
 
 ## **Technologies utilisés** 
 - React native
@@ -15,20 +14,22 @@ Cette application va être utiilisé pour les Agents en gare. Elle est exclusive
 - React
 - React Native
 
+
+
 ## **Démarrer l'application**
 
-1. Installer les dépendances
-```bash
-npm install @react-navigation/native
-npm install @react-navigation/stack
-npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
-```
+Démarrer l'application 
 
-2. Démarrer l'application 
-```bash
+```shell
 npm start
 ```
 
-3. Lancer sur un émulateur ou votre appareil
+Installation des bibliothèques 
+```shell
+npm install @react-navigation/native
+npm install @react-navigation/stack
+npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
 
+```
 
+Modifier les adresses IP en fonction de votre adresse ip local sur laquelle vous travaillez pour la page login.
